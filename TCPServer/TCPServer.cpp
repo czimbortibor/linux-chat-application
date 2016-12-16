@@ -1,26 +1,24 @@
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <time.h>
-#include <pthread.h>
-#include <list>
-#include <cstring>
+/* 
+ * File:   TCPServer.cpp
+ * Author: czimbortibor
+ * 
+ * Created on December 16, 2016, 8:17 PM
+ */
 
-#include "ClientThread.h"
+#include "TCPServer.h"
 
+TCPServer::TCPServer(const char* address, int port) : address(address) {
+    this->port = port;
+}
 
-const int port = 10015;
+TCPServer::TCPServer(const TCPServer& original) {
+}
 
-int main() {
-    int listenSocket = 0;
-    struct sockaddr_in serverAddr;
-    std::string errorMsg;
-    
+TCPServer::~TCPServer() {
+}
+
+void TCPServer::initServer() {
     listenSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (listenSocket < 0) {
         errorMsg = "error while opening the server socket"; 
@@ -36,12 +34,9 @@ int main() {
         errorMsg = "error on binding";
         error(errorMsg.c_str());
     }
+}
 
-    int nrOfClients = 0;
-    
-    typedef std::shared_ptr<MyThread> threadPtr;
-    std::list<threadPtr> threads;
-
+void TCPServer::startServer() {
     while(1<2) {   
         printf("\nListening for clients...\n");
         res = listen(listenSocket, 1);
@@ -65,7 +60,7 @@ int main() {
         threadArgs->acceptSocket = acceptSocket;
         std::shared_ptr<MyThread> clientThread(new ClientThread(*threadArgs));
         
-        threads.push_back(clientThread);
+        clientThreads.push_back(clientThread);
         /** start the thread */
         clientThread->start();
         clientThread->join();
@@ -73,6 +68,4 @@ int main() {
 
         close(acceptSocket);
     }
-    
-    return 0;
 }
