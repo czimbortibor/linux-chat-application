@@ -12,11 +12,11 @@ class Client : public QObject {
 friend class MainWindow;
 
 public:
-    explicit Client(QObject *parent = 0);
-    Client(QString hostAddr, QString portNr);
+	explicit Client(QObject* parent = 0);
+	Client(QString serverAddr = "127.0.0.1", QString portNr = "10013");
 
 private:
-    QString hostAddr;
+	QString serverAddr;
     QString portNr;
 
     QTcpSocket* tcpSocket;

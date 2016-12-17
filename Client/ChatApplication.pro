@@ -12,11 +12,16 @@ TARGET = ChatApplication
 TEMPLATE = app
 
 
-SOURCES += main.cpp\
-        mainwindow.cpp \
-    client.cpp
+SOURCES +=\
+    Client.cpp \
+    LoginDialog.cpp \
+    Main.cpp \
+    MainWindow.cpp
 
-HEADERS  += mainwindow.h \
-    client.h
+HEADERS  += \
+    Client.h \
+    LoginDialog.h \
+    MainWindow.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    logindialog.ui

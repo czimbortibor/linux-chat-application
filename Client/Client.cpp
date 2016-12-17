@@ -1,15 +1,15 @@
-#include "client.h"
+#include "Client.h"
 
-Client::Client(QObject *parent) : QObject(parent) {
+Client::Client(QObject* parent) : QObject(parent) {
 }
 
-Client::Client(QString hostAddr, QString portNr) {
+Client::Client(QString serverAddr, QString portNr) {
     tcpSocket = new QTcpSocket();
     dataStream = new QDataStream();
 
     dataStream->setDevice(tcpSocket);
 
-    this->hostAddr = hostAddr;
+	this->serverAddr = serverAddr;
     this->portNr = portNr;
 
     connect(tcpSocket, &QIODevice::readyRead, this, &Client::onReadMsg);
@@ -17,10 +17,10 @@ Client::Client(QString hostAddr, QString portNr) {
 
 void Client::onConnectToHost() {
     tcpSocket->abort();
-    qDebug() << "connecting to " << hostAddr << ":" << portNr;
+	qDebug() << "connecting to " << serverAddr << ":" << portNr;
 
     /** connect to the main server */
-    tcpSocket->connectToHost(hostAddr, portNr.toInt());
+	tcpSocket->connectToHost(serverAddr, portNr.toInt());
 }
 
 void Client::onReadMsg() {
