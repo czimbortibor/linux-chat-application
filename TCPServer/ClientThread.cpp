@@ -8,7 +8,7 @@
 
 #include "ClientThread.h"
 
-ClientThread::ClientThread(ThreadArgs& threadArgs): MyThread(threadArgs), threadArgs(&threadArgs) {
+ClientThread::ClientThread(ThreadArgs& threadArgs) : MyThread(threadArgs), threadArgs(&threadArgs) {
     /** initializing mutex and condition variables */
     pthread_mutex_init(&mutex, NULL);
     pthread_cond_init(&condition, NULL);
@@ -54,9 +54,13 @@ void* ClientThread::run() {
         /** get the current system date + time */
         time_t serverTime;
         serverTime = time(NULL);
+        std::string loginTime = ctime(&serverTime);
+        /** create the new User object */
+        user = User(loginTime);
+        /** prepare the first package to be sent to the user, their login time */
         snprintf(sendBuff, sizeOfMsg, "%.24s", ctime(&serverTime));
 
-        std::cout << "Sending the date/time to the client...\n";
+        std::cout << "Sending the date+time to the client...\n";
         int res = send(acceptSocket, sendBuff, strlen(sendBuff), 0);
         if (res < 0) {
             errorMsg = "Error while sending the message to the client!";

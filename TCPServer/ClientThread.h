@@ -21,6 +21,7 @@
 #include <arpa/inet.h>
 
 #include "MyThread.h"
+#include "User.h"
 
 class ClientThread : public MyThread {
 public:
@@ -39,6 +40,9 @@ private:
     ThreadArgs* threadArgs;
     pthread_mutex_t mutex;
     pthread_cond_t condition;
+    
+    /** basic information about a user */
+    User user;
 };
 
 #endif /* CLIENTTHREAD_H */
