@@ -22,15 +22,23 @@
 
 #include "MyThread.h"
 
-
 class ClientThread : public MyThread {
 public:
     ClientThread(ThreadArgs& threadArgs);
     virtual ~ClientThread();
+    
+    void lockMutex();
+    void unlockMutex();
+    void signalCondition();
+    
     virtual void* run();
+    
+    bool loggedIn = false;
     
 private:
     ThreadArgs* threadArgs;
+    pthread_mutex_t mutex;
+    pthread_cond_t condition;
 };
 
 #endif /* CLIENTTHREAD_H */

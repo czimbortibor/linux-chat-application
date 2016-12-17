@@ -16,6 +16,10 @@ TCPServer::TCPServer(const TCPServer& original) {
 }
 
 TCPServer::~TCPServer() {
+    if (address != NULL) {
+        delete address;
+        address = NULL;
+    }
 }
 
 void TCPServer::initServer() {
@@ -37,15 +41,15 @@ void TCPServer::initServer() {
 }
 
 void TCPServer::startServer() {
-    while(1<2) {   
-        printf("\nListening for clients...\n");
+    while(1<2) {
+        std::cout << "\nListening for clients...\n";
         res = listen(listenSocket, 1);
         if (res < 0) {
             errorMsg = "error while listening on socket";
             error(errorMsg.c_str());
         }
 
-        printf("Accepting client...\n");
+        std::cout << "Accepting client...\n";
         socklen_t addrSize = sizeof(serverAddr);
         int acceptSocket = accept(listenSocket, NULL, NULL);
         if (acceptSocket < 0) {
@@ -54,15 +58,22 @@ void TCPServer::startServer() {
         }
 
         /** create thread for the new client */
-        printf("Creating a new thread for the client...\n");
+        std::cout << "Creating a new thread for the client...\n";
         ThreadArgs* threadArgs = new ThreadArgs();
         //threadArgs->messageBuff = new char[512];
         threadArgs->acceptSocket = acceptSocket;
-        std::shared_ptr<MyThread> clientThread(new ClientThread(*threadArgs));
-        
+        std::shared_ptr<ClientThread> clientThread(new ClientThread(*threadArgs));
         clientThreads.push_back(clientThread);
-        /** start the thread */
+        
         clientThread->start();
+        sleep(1);
+        clientThread->lockMutex();
+        // ------ critical section -----
+        clientThread->loggedIn = true;
+        // -----------------------------
+        clientThread->signalCondition();
+        clientThread->unlockMutex();
+        
         clientThread->join();
         ++nrOfClients;
 

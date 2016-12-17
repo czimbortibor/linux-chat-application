@@ -9,7 +9,6 @@
 #include "MyThread.h"
 
 MyThread::MyThread(ThreadArgs& threadArgs) : threadArgs(&threadArgs) { 
-    // std::cout << this->threadArgs->acceptSocket << " " << this->threadArgs->messageBuff << "\n";
 }
 
 MyThread::~MyThread() {
@@ -17,6 +16,7 @@ MyThread::~MyThread() {
         delete threadArgs;
         threadArgs = NULL;
     }
+    pthread_exit(NULL);
 }
 
 MyThread::MyThread(const MyThread& original) {

@@ -21,20 +21,24 @@
 class MyThread {
 public:
     MyThread(ThreadArgs& threadArgs);
-    // MyThread(std::unique_ptr<Runnable> runnable);
     virtual ~MyThread();
     MyThread(const MyThread& original);
     const MyThread& operator=(const MyThread& other);
+    
     void start();
     void join();
     
 private:
     pthread_t thread;
-    // std::unique_ptr<Runnable> runnable;
     static void* entryFunction(void* threadPtr);
     
 protected:
+    /** arguments for the thread */
     ThreadArgs* threadArgs;
+    
+    virtual void lockMutex() = 0;
+    virtual void unlockMutex() = 0;
+    virtual void signalCondition() = 0;
     virtual void* run() = 0;
 };
 

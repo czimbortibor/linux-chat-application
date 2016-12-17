@@ -43,7 +43,7 @@ private:
     int res = 0;
     int nrOfClients = 0;
     /** thread for every client */
-    std::list<std::shared_ptr<MyThread>> clientThreads;
+    std::list<std::shared_ptr<ClientThread>> clientThreads;
 };
 
 #endif /* TCPSERVER_H */
