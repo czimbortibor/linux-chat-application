@@ -62,6 +62,10 @@ void TCPServer::startServer() {
         ThreadArgs* threadArgs = new ThreadArgs();
         //threadArgs->messageBuff = new char[512];
         threadArgs->acceptSocket = acceptSocket;
+<<<<<<< HEAD
+=======
+        //std::shared_ptr<MyThread> clientThread(new ClientThread(*threadArgs));
+>>>>>>> refs/remotes/origin/master
         std::shared_ptr<ClientThread> clientThread(new ClientThread(*threadArgs));
         clientThreads.push_back(clientThread);
         
