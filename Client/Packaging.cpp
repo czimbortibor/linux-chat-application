@@ -47,8 +47,31 @@ std::string Packaging::createPivatePackage(const std::string& receiver) {
 
 std::string Packaging::constructPackage() {
 	std::string length = std::to_string(message.length());
-	// receiver|msglength|message|sender
+	// package: receiver|msglength|message|sender
 	return receiver + glue + length + glue + message + glue + sender;
+}
+
+void Packaging::parsePackage(std::string package) {
+	size_t pos = 0;
+	std::string token;
+	std::deque<std::string> tokens;
+	while ((pos = package.find(glue)) != std::string::npos) {
+		// next token
+		token = package.substr(0, pos);
+		tokens.push_back(token);
+		// erase the token + the glue
+		package.erase(0, pos + 1);
+	}
+
+	// package: receiver|msglength|message|sender
+	receiver = tokens[0];
+	tokens.pop_front();
+	msglength = std::stoi(tokens[0]);
+	tokens.pop_front();
+	message = tokens[0];
+	tokens.pop_front();
+	sender = tokens[0];
+	tokens.pop_front();
 }
 
 std::string Packaging::identifyRequest(std::string package) {

@@ -3,6 +3,7 @@
 
 #include <QDialog>
 
+
 namespace Ui {
 class LoginDialog;
 }
@@ -14,10 +15,10 @@ public:
 	explicit LoginDialog(QWidget* parent = 0);
     ~LoginDialog();
 
-	QString getUsername();
-	QString getPassword();
-	QString getServerAddr();
-	QString getPort();
+	QString getUsername() const { return username; }
+	QString getPassword() const { return password; }
+	QString getServerAddr() const { return serverAddr; }
+	QString getPort() const { return port; }
 
 private:
 	Ui::LoginDialog* ui;

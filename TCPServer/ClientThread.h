@@ -31,10 +31,15 @@ public:
     void lockMutex();
     void unlockMutex();
     void signalCondition();
+    void closeSocket();
     
     virtual void* run();
     
+    void onTimeRequest();
+    void onMessageRequest();
+    
     bool loggedIn = false;
+    bool messageRequest = false;
     
 private:
     ThreadArgs* threadArgs;

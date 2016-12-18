@@ -10,12 +10,13 @@
 #define PACKAGING_H
 
 #include <string>
+#include <deque>
 
 /**	Realizes the protocol inside the chat application.
  *
  *	handles:
  *		- package assembling -> creates a package for a specific request
- *		- package disassembling |SERVER SIDE ONLY| -> read the package and identify the request
+ *		- package disassembling -> read the package and identify the request
  *
  *	general package format: receiver|msglength|message|sender
  *	joined together with '|'
@@ -45,8 +46,13 @@ public:
 	/** private message to a specific user */
 	std::string createPivatePackage(const std::string& receiver);
 
+	void parsePackage(std::string package);
+
 	/** parses the package and returns the request's name */
 	std::string identifyRequest(std::string package);
+
+	std::string getMessage() const { return message; }
+	std::string getSender() const { return sender; }
 
 private:
 	std::string receiver;

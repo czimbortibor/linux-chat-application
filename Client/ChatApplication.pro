@@ -16,12 +16,14 @@ SOURCES +=\
     Client.cpp \
     LoginDialog.cpp \
     Main.cpp \
-    MainWindow.cpp
+    MainWindow.cpp \
+    Packaging.cpp
 
 HEADERS  += \
     Client.h \
     LoginDialog.h \
-    MainWindow.h
+    MainWindow.h \
+    Packaging.h
 
 FORMS    += mainwindow.ui \
     logindialog.ui

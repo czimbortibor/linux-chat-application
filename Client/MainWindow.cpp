@@ -32,8 +32,10 @@ void MainWindow::initClient() {
     typedef void (QAbstractSocket::*QAbstractSocketErrorSignal)(QAbstractSocket::SocketError);
 	// TODO: socket error handling
     //connect(client->tcpSocket, static_cast<QAbstractSocketErrorSignal>(&QAbstractSocket::error), ui->lblError, &MainWindow::displayError);
-	connect(client.data(), &Client::receivedMessage, this, &MainWindow::onReceivedMessage);
+	connect(client.data(), &Client::receivedPackage, this, &MainWindow::onReceivedMessage);
 
+	QString request = "login_request";
+	client->setRequest(request);
     emit connectClient();
 	this->show();
 }
@@ -51,5 +53,5 @@ void MainWindow::onReceivedMessage(QString message) {
 void MainWindow::onSendMessage() {
 	qDebug() << "sending message to the server...";
 	QString message = ui->editSendMessage->toPlainText();
-	client->sendMessage(message);
+	client->sendPackage(message);
 }

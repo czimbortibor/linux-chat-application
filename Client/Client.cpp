@@ -1,7 +1,6 @@
 #include "Client.h"
 
-Client::Client(QObject* parent) : QObject(parent) {
-}
+Client::Client(QObject* parent) : QObject(parent) {}
 
 Client::Client(QString serverAddr, QString portNr) {
 	QTcpSocket* tcpSocketPtr = new QTcpSocket();
@@ -23,6 +22,8 @@ void Client::onConnectToHost() {
 
     /** connect to the main server */
 	tcpSocket->connectToHost(serverAddr, portNr.toInt());
+
+	std::string package = packaging.createLoginPackage("test_user");
 }
 
 void Client::onReadMsg() {
@@ -34,25 +35,28 @@ void Client::onReadMsg() {
     *dataStream >> dataBlock;
 
     qDebug() << "reading the message...";
-    /**tries to close the transaction */
-    /*if (!dataStream->commitTransaction()) {
+	// tries to close the transaction
+	if (!dataStream->commitTransaction()) {
         return;
     }
     qDebug() << "closing transaction...";*/
 
-	/** reads the whole message. MAY NOT BE GOOD ENOUGH */
+	/** reads the whole message in one go. MAY NOT BE GOOD ENOUGH */
     tcpSocket->waitForBytesWritten();
     QByteArray res = tcpSocket->readAll();
-    QString message = QString::fromLatin1(res);
 
-    emit receivedMessage(message);
+	QString package = QString::fromLatin1(res);
+	packaging.parsePackage(package.toStdString());
+	QString sender = QString::fromStdString(packaging.getSender());
+	QString message = QString::fromStdString(packaging.getMessage());
+	QString output = sender + message;
+
+	emit receivedPackage(output);
 }
 
-void Client::sendMessage(QString message) {
+void Client::sendPackage(QString package) {
 	/** encode the message into a byte array */
-	QByteArray messageBlock;
-	QDataStream writeOut(&messageBlock, QIODevice::WriteOnly);
-	writeOut << message;
+	QByteArray messageBlock = package.toUtf8();
 
 	tcpSocket->write(messageBlock);
 	qDebug() << "message sent to the server.";

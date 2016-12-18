@@ -8,6 +8,8 @@
 #include <QTcpSocket>
 #include <QDataStream>
 
+#include "Packaging.h"
+
 
 class Client : public QObject {
     Q_OBJECT
@@ -17,19 +19,23 @@ public:
 	explicit Client(QObject* parent = 0);
 	Client(QString serverAddr = "127.0.0.1", QString portNr = "10013");
 
-	void sendMessage(QString message);
+	void sendPackage(QString package);
+
+	void setRequest(const QString& value) { request = value; }
 
 private:
 	QString serverAddr;
     QString portNr;
-
 	QSharedPointer<QTcpSocket> tcpSocket;
 	QSharedPointer<QDataStream> dataStream;
+
+	Packaging packaging;
+	QString request = "login_request";
 
 signals:
     void readyRead();
     void error();
-    void receivedMessage(QString message);
+	void receivedPackage(QString package);
 
 public slots:
     void onConnectToHost();

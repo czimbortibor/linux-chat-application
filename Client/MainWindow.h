@@ -7,6 +7,7 @@
 #include "LoginDialog.h"
 #include "Client.h"
 
+
 namespace Ui {
 class MainWindow;
 }

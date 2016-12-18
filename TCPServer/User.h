@@ -1,5 +1,5 @@
 
-/* 
+/*
  * File:   User.h
  * Author: czimbortibor
  *
@@ -16,9 +16,9 @@ public:
     User(std::string loginTime = "");
     User(const User& original);
     virtual ~User();
-    
-    std::string getUsername();
-    std::string getLoginTime();
+
+    std::string getUsername() const { return username; }
+    std::string getLoginTime() const { return loginTime; }
 
 private:
     std::string username;
@@ -26,4 +26,3 @@ private:
 };
 
 #endif /* USER_H */
-
