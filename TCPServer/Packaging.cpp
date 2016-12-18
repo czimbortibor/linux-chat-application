@@ -70,5 +70,4 @@ std::string Packaging::identifyRequest(std::string package) {
 		package.erase(0, pos + 1);
 	}
 	return "unidentifiable";
-}
 

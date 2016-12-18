@@ -10,6 +10,7 @@
 #define PACKAGING_H
 
 #include <string>
+<<<<<<< HEAD
 #include <deque>
 
 /**	Realizes the protocol inside the chat application.
@@ -63,6 +64,35 @@ private:
 	const char glue = '|';
 	/** joins the fields together */
 	std::string constructPackage();
+=======
+
+/** handles:
+ * package assembling -> creates a package for a specific request
+ * package disassembling |SERVER SIDE ONLY| -> read the package and identify the request
+*/
+class Packaging {
+public:
+	Packaging(std::string message);
+    virtual ~Packaging();
+
+	/** package used for login requests */
+	std::string getLoginPackage() const { return loginPackage; }
+	/** package used for sending message to every online user */
+	std::string getGlobalMessagePackage() const { return globalMessagePackage; }
+	/** package used for sending message to a specific user */
+	std::string getPrivateMessagePackage() const { return privateMessagePackage; }
+
+	void createLoginPackage();
+	void createGlobalPackage();
+	void createPivatePackage();
+
+private:
+	std::string message;
+	std::string loginPackage;
+	std::string globalMessagePackage;
+	std::string privateMessagePackage;
+
+>>>>>>> 1a123a584b2b361786849f2a6f4730d715edc42b
 };
 
 #endif /* PACKAGING_H */

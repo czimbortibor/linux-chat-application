@@ -56,8 +56,12 @@ void Client::onReadMsg() {
 
 void Client::sendPackage(QString package) {
 	/** encode the message into a byte array */
+<<<<<<< HEAD
 	QByteArray messageBlock = package.toUtf8();
+=======
+	QByteArray messagBlock = message.toUtf8();
+>>>>>>> 1a123a584b2b361786849f2a6f4730d715edc42b
 
-	tcpSocket->write(messageBlock);
+	tcpSocket->write(messagBlock);
 	qDebug() << "message sent to the server.";
 }
