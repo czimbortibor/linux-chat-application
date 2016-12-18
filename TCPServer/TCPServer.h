@@ -18,9 +18,6 @@
 
 #include <list>
 
-/** std::shared_ptr<MyThread> */
-// typedef std::shared_ptr<MyThread> threadPtr;
-
 /** synchronous TCP server where every client is managed in their own separate thread */
 class TCPServer {
 public:
@@ -28,21 +25,27 @@ public:
     TCPServer(const TCPServer& original);
     virtual ~TCPServer();
     
+    /** initializes the various host attributes and the listening socket */
     void initServer();
     void startServer();
+    /** creates the connection and sets the accepting socket */
+    void establishConnection();
     
 private:
     const char* address;
     int port;
-    /** socket the server uses as an entry point for incoming connections */
-    int listenSocket = 0;
+    /** socket the server uses as a temporary entry point for incoming connections */
+    int listenSocket;
+    /** after a new connection is detected on the listenSocket, this socket becomes the main connection to the outside world */
+    int acceptSocket;
     struct sockaddr_in serverAddr;
     /** error message for the various system calls */
-    std::string errorMsg = "";
+    std::string errorMsg;
     /** return value for the various system calls */
-    int res = 0;
-    int nrOfClients = 0;
-    /** thread for every client */
+    int res;
+    /** currently logged in users' count */
+    int nrOfClients;
+    /** thread for every user */
     std::list<std::shared_ptr<ClientThread>> clientThreads;
 };
 

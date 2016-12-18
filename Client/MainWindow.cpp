@@ -6,7 +6,9 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
 	LoginDialog* dialogPtr = new LoginDialog(this);
 	loginDialog = QSharedPointer<LoginDialog>(dialogPtr);
 	loginDialog->show();
+
 	connect(loginDialog.data(), &LoginDialog::signIn, this, &MainWindow::onSignIn); // data(): extracts the raw pointer
+	connect(ui->btnSendMessage, &QPushButton::clicked, this, &MainWindow::onSendMessage);
 }
 
 MainWindow::~MainWindow() {
@@ -41,7 +43,13 @@ void MainWindow::onDisplayError(QAbstractSocket::SocketError socketError) {
 }
 
 void MainWindow::onReceivedMessage(QString message) {
-    qDebug() << "receiving message...";
 	message.insert(0, "Logged in on: ");
     ui->editRecvMessage->append(message);
+	qDebug() << "received message";
+}
+
+void MainWindow::onSendMessage() {
+	qDebug() << "sending message to the server...";
+	QString message = ui->editSendMessage->toPlainText();
+	client->sendMessage(message);
 }

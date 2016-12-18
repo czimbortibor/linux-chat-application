@@ -17,6 +17,7 @@
 
 #include "Error.h"
 #include "ThreadArgs.h"
+#include "Packaging.h"
 
 class MyThread {
 public:
@@ -33,6 +34,7 @@ private:
     static void* entryFunction(void* threadPtr);
     
 protected:
+    std::string errorMsg;
     /** arguments for the thread */
     ThreadArgs* threadArgs;
     

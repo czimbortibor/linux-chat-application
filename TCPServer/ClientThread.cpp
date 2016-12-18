@@ -12,7 +12,6 @@ ClientThread::ClientThread(ThreadArgs& threadArgs) : MyThread(threadArgs), threa
     /** initializing mutex and condition variables */
     pthread_mutex_init(&mutex, NULL);
     pthread_cond_init(&condition, NULL);
-    
 }
 
 ClientThread::~ClientThread() {
@@ -37,7 +36,6 @@ void ClientThread::signalCondition() {
 }
 
 void* ClientThread::run() {
-    std::string errorMsg;
     
     /** lock the mutex and wait for signal */
     pthread_mutex_lock(&mutex);
@@ -46,19 +44,18 @@ void* ClientThread::run() {
         pthread_cond_wait(&condition, &mutex);
         std::cout << "Preparing the message for the client...\n";
         int acceptSocket = threadArgs->acceptSocket;
-        int sizeOfMsg = sizeof(threadArgs->messageBuff);
-        char sendBuff[sizeOfMsg];
+        int buffSize = sizeof(threadArgs->messageBuff);
+        char sendBuff[buffSize];
 
         // std::memcpy(sendBuff, threadData->sendBuff, lenOfBuff+1);
 
-        /** get the current system date + time */
-        time_t serverTime;
-        serverTime = time(NULL);
-        std::string loginTime = ctime(&serverTime);
+        std::string serverTime = this->getTime();
+        
         /** create the new User object */
-        user = User(loginTime);
+        user = User(serverTime);
         /** prepare the first package to be sent to the user, their login time */
-        snprintf(sendBuff, sizeOfMsg, "%.24s", ctime(&serverTime));
+        
+        snprintf(sendBuff, buffSize, "%.24s", serverTime.c_str());
 
         std::cout << "Sending the date+time to the client...\n";
         int res = send(acceptSocket, sendBuff, strlen(sendBuff), 0);
@@ -67,8 +64,27 @@ void* ClientThread::run() {
             error(errorMsg.c_str());
         }
         std::cout << "Message sent to the client.\n" ;
-        
     }
     pthread_mutex_unlock(&mutex);
     pthread_exit(NULL);
-} 
+}
+
+std::string ClientThread::readMessage() {
+    int buffSize = sizeof(threadArgs->messageBuff);
+    char msgBuff[buffSize];
+    int acceptSocket = threadArgs->acceptSocket;
+    int res = recv(acceptSocket, msgBuff, buffSize, 0);
+    if (res < 0) {
+        errorMsg = "error when receiving the message from the client!\n";
+	error(errorMsg.c_str());
+    }
+    msgBuff[res] = '\0';
+    std::cout << "received message from client: " << msgBuff << "\n";
+}
+
+std::string ClientThread::getTime() {
+    time_t now;
+    now = time(NULL);
+    std::string currentTime = ctime(&now);
+    return currentTime;
+}

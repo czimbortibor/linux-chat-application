@@ -40,24 +40,27 @@ void TCPServer::initServer() {
     }
 }
 
+void TCPServer::establishConnection() {
+    std::cout << "Listening for clients...\n";
+    res = listen(listenSocket, 1);
+    if (res < 0) {
+        errorMsg = "error while listening on socket";
+        error(errorMsg.c_str());
+    }
+
+    std::cout << "Accepting client...\n";
+    socklen_t addrSize = sizeof(serverAddr);
+    acceptSocket = accept(listenSocket, NULL, NULL);
+    if (acceptSocket < 0) {
+        errorMsg = "error while creating the accepting socket";
+        error(errorMsg.c_str());
+    }
+}
+
 void TCPServer::startServer() {
     while(1<2) {
-        std::cout << "\nListening for clients...\n";
-        res = listen(listenSocket, 1);
-        if (res < 0) {
-            errorMsg = "error while listening on socket";
-            error(errorMsg.c_str());
-        }
-
-        std::cout << "Accepting client...\n";
-        socklen_t addrSize = sizeof(serverAddr);
-        int acceptSocket = accept(listenSocket, NULL, NULL);
-        if (acceptSocket < 0) {
-            errorMsg = "error while creating the accepting socket";
-            error(errorMsg.c_str());
-        }
-
-        /** create thread for the new client */
+        this->establishConnection();
+        
         std::cout << "Creating a new thread for the client...\n";
         ThreadArgs* threadArgs = new ThreadArgs();
         //threadArgs->messageBuff = new char[512];

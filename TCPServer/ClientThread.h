@@ -43,6 +43,9 @@ private:
     
     /** basic information about a user */
     User user;
+    std::string readMessage();
+    /** get the current system date + time */
+    std::string getTime();
 };
 
 #endif /* CLIENTTHREAD_H */

@@ -2,6 +2,8 @@
 #define CLIENT_H
 
 #include <QObject>
+#include <QSharedPointer>
+
 #include <QIODevice>
 #include <QTcpSocket>
 #include <QDataStream>
@@ -15,12 +17,14 @@ public:
 	explicit Client(QObject* parent = 0);
 	Client(QString serverAddr = "127.0.0.1", QString portNr = "10013");
 
+	void sendMessage(QString message);
+
 private:
 	QString serverAddr;
     QString portNr;
 
-    QTcpSocket* tcpSocket;
-    QDataStream* dataStream;
+	QSharedPointer<QTcpSocket> tcpSocket;
+	QSharedPointer<QDataStream> dataStream;
 
 signals:
     void readyRead();

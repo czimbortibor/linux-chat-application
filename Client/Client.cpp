@@ -4,15 +4,17 @@ Client::Client(QObject* parent) : QObject(parent) {
 }
 
 Client::Client(QString serverAddr, QString portNr) {
-    tcpSocket = new QTcpSocket();
-    dataStream = new QDataStream();
+	QTcpSocket* tcpSocketPtr = new QTcpSocket();
+	tcpSocket = QSharedPointer<QTcpSocket>(tcpSocketPtr);
+	QDataStream* dataStreamPtr = new QDataStream();
+	dataStream = QSharedPointer<QDataStream>(dataStreamPtr);
 
-    dataStream->setDevice(tcpSocket);
+	dataStream->setDevice(tcpSocket.data());
 
 	this->serverAddr = serverAddr;
     this->portNr = portNr;
 
-    connect(tcpSocket, &QIODevice::readyRead, this, &Client::onReadMsg);
+	connect(tcpSocket.data(), &QIODevice::readyRead, this, &Client::onReadMsg);
 }
 
 void Client::onConnectToHost() {
@@ -38,10 +40,20 @@ void Client::onReadMsg() {
     }
     qDebug() << "closing transaction...";*/
 
-    /** reads the whole message. NOT GOOD ENOUGH */
+	/** reads the whole message. MAY NOT BE GOOD ENOUGH */
     tcpSocket->waitForBytesWritten();
     QByteArray res = tcpSocket->readAll();
     QString message = QString::fromLatin1(res);
 
     emit receivedMessage(message);
+}
+
+void Client::sendMessage(QString message) {
+	/** encode the message into a byte array */
+	QByteArray messageBlock;
+	QDataStream writeOut(&messageBlock, QIODevice::WriteOnly);
+	writeOut << message;
+
+	tcpSocket->write(messageBlock);
+	qDebug() << "message sent to the server.";
 }

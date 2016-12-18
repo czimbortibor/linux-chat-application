@@ -37,6 +37,7 @@ private slots:
 	void onSignIn(QString username, QString password, QString serverAddr, QString port);
     void onDisplayError(QAbstractSocket::SocketError socketError);
     void onReceivedMessage(QString message);
+	void onSendMessage();
 };
 
 
