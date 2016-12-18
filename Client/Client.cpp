@@ -34,8 +34,8 @@ void Client::onReadMsg() {
     *dataStream >> dataBlock;
 
     qDebug() << "reading the message...";
-    /**tries to close the transaction */
-    /*if (!dataStream->commitTransaction()) {
+	// tries to close the transaction
+	if (!dataStream->commitTransaction()) {
         return;
     }
     qDebug() << "closing transaction...";*/
@@ -50,10 +50,8 @@ void Client::onReadMsg() {
 
 void Client::sendMessage(QString message) {
 	/** encode the message into a byte array */
-	QByteArray messageBlock;
-	QDataStream writeOut(&messageBlock, QIODevice::WriteOnly);
-	writeOut << message;
+	QByteArray messagBlock = message.toUtf8();
 
-	tcpSocket->write(messageBlock);
+	tcpSocket->write(messagBlock);
 	qDebug() << "message sent to the server.";
 }

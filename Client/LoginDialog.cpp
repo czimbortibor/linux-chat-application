@@ -26,19 +26,3 @@ void LoginDialog::on_btnOk_clicked() {
 void LoginDialog::on_btnCancel_clicked() {
 	this->close();
 }
-
-QString LoginDialog::getUsername() {
-	return username;
-}
-
-QString LoginDialog::getPassword() {
-	return password;
-}
-
-QString LoginDialog::getServerAddr() {
-	return serverAddr;
-}
-
-QString LoginDialog::getPort() {
-	return port;
-}

@@ -30,6 +30,8 @@ public:
     void startServer();
     /** creates the connection and sets the accepting socket */
     void establishConnection();
+    /** removes the threads for users who are logged out */
+    void dropConnections();
     
 private:
     const char* address;
@@ -46,7 +48,8 @@ private:
     /** currently logged in users' count */
     int nrOfClients;
     /** thread for every user */
-    std::list<std::shared_ptr<ClientThread>> clientThreads;
+    //std::list<std::shared_ptr<ClientThread>> clientThreads;
+    std::list<std::unique_ptr<ClientThread>> clientThreads;
 };
 
 #endif /* TCPSERVER_H */

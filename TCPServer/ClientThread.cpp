@@ -35,8 +35,20 @@ void ClientThread::signalCondition() {
     pthread_cond_signal(&condition);
 }
 
+void ClientThread::closeSocket() {
+    close(threadArgs->acceptSocket);
+}
+
 void* ClientThread::run() {
-    
+    /*if (!loggedIn) {
+        onTimeRequest();
+    }*/
+    if (!messageRequest) {
+        onMessageRequest();
+    }
+}
+
+void ClientThread::onTimeRequest() {
     /** lock the mutex and wait for signal */
     pthread_mutex_lock(&mutex);
     while(!loggedIn) {
@@ -66,12 +78,26 @@ void* ClientThread::run() {
         std::cout << "Message sent to the client.\n" ;
     }
     pthread_mutex_unlock(&mutex);
-    pthread_exit(NULL);
+}
+
+void ClientThread::onMessageRequest() {
+    /** lock the mutex and wait for signal */
+    pthread_mutex_lock(&mutex);
+    while(!messageRequest) {
+        /** automatically and atomically unlocks the mutex while it waits */
+        pthread_cond_wait(&condition, &mutex);
+        std::cout << "Preparing the message for the client...\n";
+        int acceptSocket = threadArgs->acceptSocket;
+        int buffSize = sizeof(threadArgs->messageBuff);
+        char sendBuff[buffSize];
+        std::string message = this->readMessage();
+    }
+    pthread_mutex_unlock(&mutex);
 }
 
 std::string ClientThread::readMessage() {
     int buffSize = sizeof(threadArgs->messageBuff);
-    char msgBuff[buffSize];
+    char msgBuff[512];
     int acceptSocket = threadArgs->acceptSocket;
     int res = recv(acceptSocket, msgBuff, buffSize, 0);
     if (res < 0) {
@@ -80,6 +106,7 @@ std::string ClientThread::readMessage() {
     }
     msgBuff[res] = '\0';
     std::cout << "received message from client: " << msgBuff << "\n";
+    return " ";
 }
 
 std::string ClientThread::getTime() {
