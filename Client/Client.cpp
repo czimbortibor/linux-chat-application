@@ -37,8 +37,9 @@ void Client::onLogoutRequest() {
 	sendPackage(QString::fromStdString(package));
 }
 
-void Client::onGlobalPackage() {
-
+void Client::onGlobalPackage(QString message) {
+	std::string package = packaging.createGlobalPackage(message.toStdString(), username.toStdString());
+	sendPackage(QString::fromStdString(package));
 }
 
 void Client::onReadMsg() {
@@ -69,6 +70,8 @@ void Client::onReadMsg() {
 }
 
 void Client::sendPackage(QString package) {
+	qDebug() << "package: " << package;
+
 	/** encode the message into a byte array */
 	QByteArray messageBlock = package.toUtf8();;
 

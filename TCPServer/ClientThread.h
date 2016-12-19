@@ -37,16 +37,17 @@ public:
     void lockMutex();
     void unlockMutex();
     void signalCondition();
+    /** automatically and atomically unlocks the mutex while it waits */
+    void waitCondition();
+    
     void closeSocket();
     
     virtual void* run();
     
     void onLoginRequest();
-    void onGlobalMessageRequest();
     void onLogoutRequest();
+    void onGlobalMessageRequest(std::string package);
     
-    bool loginRequest = false;
-    bool messageRequest = false;
     bool logoutRequest = false;
     
     void setAcceptSocket(int& listenSocket, struct sockaddr_in serverAddr);
@@ -59,6 +60,7 @@ private:
     
     /** basic information about a user */
     User user;
+    void sendPackage(const std::string& package);
     std::string readPackage();
     /** get the current system date + time */
     std::string getTime();

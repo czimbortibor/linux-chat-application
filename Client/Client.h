@@ -42,6 +42,7 @@ public slots:
 	void onLoginRequest();
 	void onReadMsg();
 	void onLogoutRequest();
+	void onGlobalPackage(QString message);
 };
 
 #endif // CLIENT_H

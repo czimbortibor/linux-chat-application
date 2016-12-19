@@ -44,9 +44,9 @@ public:
     /** package used for disconnect requests */
     std::string createDisconnectPackage();
     /** package used for sending message to every online user */
-    std::string createGlobalPackage(const std::string& message);
+	  std::string createGlobalPackage(const std::string& message, const std::string& sennder);
     /** private message to a specific user */
-    std::string createPivatePackage(const std::string& receiver, const std::string& message);
+	  std::string createPivatePackage(const std::string& receiver, const std::string& message, const std::string& sender);
 
     void parsePackage(std::string package);
 

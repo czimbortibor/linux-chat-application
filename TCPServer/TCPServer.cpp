@@ -21,7 +21,6 @@ TCPServer::~TCPServer() {
         delete address;
         address = NULL;
     }
-    dropConnections();
 }
 
 void TCPServer::initServer() {
@@ -53,34 +52,11 @@ void TCPServer::startServer() {
     while(1<2) {
         std::cout << "Accepting client...\n";
         std::unique_ptr<ClientThread> clientThread(new ClientThread(usersPtr));
+        /** creates the accept socket for the thread */
         clientThread->setAcceptSocket(listenSocket, serverAddr);
         std::cout << "Creating a new thread for the client...\n";
         clientThread->start();
-        /** move the ownership of the unique_ptr to the list */
-        //clientThreads.push_back(std::move(clientThread));
+        /** move the ownership of the unique_ptr to the list and insert it into the list */
         usersPtr->push_back(std::move(clientThread));
-       // for (auto& clientThread : clientThreads) {
-        //    clientThread->start();
-            /*sleep(1);
-            clientThread->lockMutex();
-            // ------ critical section -----
-            if (!clientThread->loggedIn) {
-                clientThread->loggedIn = true;
-            }
-            clientThread->messageRequest = true;
-            // -----------------------------
-            clientThread->signalCondition();
-            clientThread->unlockMutex();
-        */
-        //}
-    }
-}
-
-void TCPServer::dropConnections() {
-    for (auto& clientThread : clientThreads) {
-        if (!clientThread->loginRequest) {
-            clientThread->closeSocket();
-            clientThreads.remove(clientThread);
-        }
     }
 }

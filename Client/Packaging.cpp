@@ -28,36 +28,42 @@ Packaging::~Packaging() {}
 std::string Packaging::createLoginPackage(const std::string& username) {
 	receiver = "server";
     message = username;
+	sender = " ";
     return constructPackage();
 }
 
 std::string Packaging::createTimePackage(const std::string& message) {
     receiver = "self";
     this->message = message;
+	sender = " ";
     return constructPackage();
 }
 
 std::string Packaging::createDisconnectPackage() {
+	receiver = " ";
     message = "disconnect";
+	sender = " ";
     return constructPackage();
 }
 
-std::string Packaging::createGlobalPackage(const std::string& message) {
+std::string Packaging::createGlobalPackage(const std::string& message, const std::string& sender) {
     this->receiver = "global";
     this->message = message;
+	this->sender = sender;
     return constructPackage();
 }
 
-std::string Packaging::createPivatePackage(const std::string& receiver, const std::string& message) {
+std::string Packaging::createPivatePackage(const std::string& receiver, const std::string& message, const std::string& sender) {
     this->receiver = receiver;
     this->message = message;
+	this->sender = sender;
     return constructPackage();
 }
 
 std::string Packaging::constructPackage() {
     std::string length = std::to_string(message.length());
     // package: receiver|msglength|message|sender
-    return receiver + glue + length + glue + message + glue + sender;
+	return receiver + glue + length + glue + message + glue + sender + glue;
 }
 
 void Packaging::parsePackage(std::string package) {
@@ -67,7 +73,7 @@ void Packaging::parsePackage(std::string package) {
     while ((pos = package.find(glue)) != std::string::npos) {
         // next token
         token = package.substr(0, pos);
-        tokens.push_back(token);
+		tokens.push_back(token);
         // erase the token + the glue
         package.erase(0, pos + 1);
     }

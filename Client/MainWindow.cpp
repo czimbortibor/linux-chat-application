@@ -31,9 +31,8 @@ void MainWindow::initClient() {
 
 	connect(this, &MainWindow::connectClient, client.data(), &Client::onLoginRequest);
 
-	// TODO: error handling
     typedef void (QAbstractSocket::*QAbstractSocketErrorSignal)(QAbstractSocket::SocketError);
-	//connect(client->tcpSocket, static_cast<QAbstractSocketErrorSignal>(&QAbstractSocket::error), this, &MainWindow::onDisplayError);
+	connect(client->tcpSocket.data(), static_cast<QAbstractSocketErrorSignal>(&QAbstractSocket::error), this, &MainWindow::onDisplayError);
 
 	connect(client.data(), &Client::receivedPackage, this, &MainWindow::onReceivedMessage);
 	connect(this->ui->btnLogout, &QPushButton::clicked, client.data(), &Client::onLogoutRequest);
@@ -58,6 +57,7 @@ void MainWindow::onDisplayError(QAbstractSocket::SocketError socketError) {
 			break;
 		default:
 			QMessageBox::information(this, title, tr("Unknown error occured."));
+		break;
 		}
 }
 
@@ -69,5 +69,6 @@ void MainWindow::onReceivedMessage(QString message) {
 void MainWindow::onSendMessage() {
 	qDebug() << "sending message to the server...";
 	QString message = ui->editSendMessage->toPlainText();
-	client->sendPackage(message);
+	client->onGlobalPackage(message);
+	ui->editSendMessage->clear();
 }
