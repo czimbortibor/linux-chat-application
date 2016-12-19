@@ -10,6 +10,7 @@
 
 TCPServer::TCPServer(const char* address, int port) : address(address) {
     this->port = port;
+    usersPtr = std::make_shared<std::list<std::unique_ptr<ClientThread>>>();
 }
 
 TCPServer::TCPServer(const TCPServer& original) {
@@ -51,12 +52,13 @@ void TCPServer::initServer() {
 void TCPServer::startServer() {
     while(1<2) {
         std::cout << "Accepting client...\n";
-        std::unique_ptr<ClientThread> clientThread(new ClientThread());
+        std::unique_ptr<ClientThread> clientThread(new ClientThread(usersPtr));
         clientThread->setAcceptSocket(listenSocket, serverAddr);
         std::cout << "Creating a new thread for the client...\n";
         clientThread->start();
         /** move the ownership of the unique_ptr to the list */
-        clientThreads.push_back(std::move(clientThread));
+        //clientThreads.push_back(std::move(clientThread));
+        usersPtr->push_back(std::move(clientThread));
        // for (auto& clientThread : clientThreads) {
         //    clientThread->start();
             /*sleep(1);

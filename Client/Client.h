@@ -17,7 +17,7 @@ friend class MainWindow;
 
 public:
 	explicit Client(QObject* parent = 0);
-	Client(QString serverAddr = "127.0.0.1", QString portNr = "10013");
+	Client(QString serverAddr = "127.0.0.1", QString portNr = "10013", QString username = "test");
 
 	void sendPackage(QString package);
 
@@ -26,6 +26,7 @@ public:
 private:
 	QString serverAddr;
     QString portNr;
+	QString username;
 	QSharedPointer<QTcpSocket> tcpSocket;
 	QSharedPointer<QDataStream> dataStream;
 

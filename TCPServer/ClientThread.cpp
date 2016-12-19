@@ -8,10 +8,13 @@
 
 #include "ClientThread.h"
 
-ClientThread::ClientThread() {
+typedef std::shared_ptr<std::list<std::unique_ptr<ClientThread>>> UserList;
+
+ClientThread::ClientThread(UserList usersPtr) : usersPtr(usersPtr) {
     /** initializing mutex and condition variables */
     pthread_mutex_init(&mutex, NULL);
     pthread_cond_init(&condition, NULL);
+    
 }
 
 ClientThread::~ClientThread() {
@@ -52,11 +55,17 @@ void* ClientThread::run() {
         }
         
         std::string request;
-        //packaging.parsePackage(package);
         request = packaging.identifyRequest(package);
         std::cout << "request: " << request << "\n";
+        
         if (request.compare("login_request") == 0) {
             onLoginRequest();
+        }
+        if (request.compare("logout_request") == 0) {
+            onLogoutRequest();
+        }
+        if (request.compare("global_package") == 0) {
+            onGlobalMessageRequest();
         }
         sleep(3);
     }
@@ -91,22 +100,23 @@ void ClientThread::onLoginRequest() {
     //pthread_mutex_unlock(&mutex);
 }
 
-void ClientThread::onMessageRequest() {
-    /** lock the mutex and wait for signal */
+void ClientThread::onGlobalMessageRequest() {  
+    std::cout << "Sending message to every user...\n";
+    //for (auto user : usersPtr.get()) {
+    std::list<std::unique_ptr<ClientThread>>::const_iterator iterator;
     pthread_mutex_lock(&mutex);
-    while(!messageRequest) {
-        /** automatically and atomically unlocks the mutex while it waits */
-        pthread_cond_wait(&condition, &mutex);
-        std::cout << "Preparing the message for the client...\n";
-        int buffSize = sizeof(messageBuff);
-        char sendBuff[buffSize];
-        std::string message = readPackage();
+    auto list = usersPtr.get();
+    for (iterator = list->begin(); iterator != list->end(); ++iterator) {
+        std::string package ;//= readPackage();
+        std::cout << "woooorks" << "\n";
     }
     pthread_mutex_unlock(&mutex);
 }
 
 void ClientThread::onLogoutRequest() {
+    std::cout << "Disconnecting user..\n";
     close(acceptSocket);
+    std::cout << "User disconnected\n";
 }
 
 std::string ClientThread::readPackage() {

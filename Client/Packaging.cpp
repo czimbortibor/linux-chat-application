@@ -98,7 +98,7 @@ std::string Packaging::identifyRequest(std::string package) {
             return "login_request";
         }
         if (token.compare("disconnect") == 0) {
-            return "disconnect_request";
+			return "logout_request";
         }
         // erase token + glue
         package.erase(0, pos + 1);

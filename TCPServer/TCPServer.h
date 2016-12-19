@@ -18,6 +18,8 @@
 
 #include <list>
 
+typedef std::shared_ptr<std::list<std::unique_ptr<ClientThread>>> UserList;
+
 /** synchronous TCP server where every client is managed in their own separate thread */
 class TCPServer {
 public:
@@ -45,11 +47,11 @@ private:
     std::string errorMsg;
     /** return value for the various system calls */
     int res;
+    
     /** thread for every user */
     std::list<std::unique_ptr<ClientThread>> clientThreads;
-    /** pointer to the list of clients, as that will be shared among everyone of them */
-    //typedef std::shared_ptr<std::list<std::unique_ptr<ClientThread>>> ClientList;
-    //ClientList clientsPtr;
+    /** pointer to the list of clients, as that will be shared among every one of them */
+    UserList usersPtr;
 };
 
 #endif /* TCPSERVER_H */

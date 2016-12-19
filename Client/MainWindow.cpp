@@ -25,7 +25,8 @@ void MainWindow::onSignIn(QString username, QString password, QString serverAddr
 }
 
 void MainWindow::initClient() {
-	Client* clientPtr = new Client(serverAddr, port);
+	QString username = this->username;
+	Client* clientPtr = new Client(serverAddr, port, username);
 	client = QSharedPointer<Client>(clientPtr);
 
 	connect(this, &MainWindow::connectClient, client.data(), &Client::onLoginRequest);

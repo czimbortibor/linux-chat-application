@@ -21,13 +21,17 @@
 #include <arpa/inet.h>
 #include <sys/select.h>
 
+#include <list>
+
 #include "MyThread.h"
 #include "User.h"
 #include "Packaging.h"
 
+
 class ClientThread : public MyThread {
+    typedef std::shared_ptr<std::list<std::unique_ptr<ClientThread>>> UserList;
 public:
-    ClientThread();
+    ClientThread(UserList usersPtr);
     virtual ~ClientThread();
     
     void lockMutex();
@@ -38,7 +42,7 @@ public:
     virtual void* run();
     
     void onLoginRequest();
-    void onMessageRequest();
+    void onGlobalMessageRequest();
     void onLogoutRequest();
     
     bool loginRequest = false;
@@ -60,6 +64,7 @@ private:
     std::string getTime();
     
     Packaging packaging;
+    UserList usersPtr;
 };
 
 #endif /* CLIENTTHREAD_H */
