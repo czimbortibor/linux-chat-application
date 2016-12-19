@@ -21,7 +21,7 @@
 
 class MyThread {
 public:
-    MyThread(ThreadArgs& threadArgs);
+    MyThread();
     virtual ~MyThread();
     MyThread(const MyThread& original);
     const MyThread& operator=(const MyThread& other);

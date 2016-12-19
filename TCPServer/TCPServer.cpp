@@ -20,6 +20,7 @@ TCPServer::~TCPServer() {
         delete address;
         address = NULL;
     }
+    dropConnections();
 }
 
 void TCPServer::initServer() {
@@ -30,7 +31,7 @@ void TCPServer::initServer() {
     }
 
     serverAddr.sin_family = AF_INET;
-    serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+    serverAddr.sin_addr.s_addr = inet_addr(address);
     serverAddr.sin_port = htons(port);
 
     int res = bind(listenSocket, (struct sockaddr*) &serverAddr, sizeof(serverAddr));
@@ -47,33 +48,18 @@ void TCPServer::initServer() {
     }
 }
 
-void TCPServer::establishConnection() {
-    std::cout << "Accepting client...\n";
-    socklen_t addrSize = sizeof(serverAddr);
-    acceptSocket = accept(listenSocket, NULL, NULL);
-    if (acceptSocket < 0) {
-        errorMsg = "error while creating the accepting socket";
-        error(errorMsg.c_str());
-    }
-}
-
 void TCPServer::startServer() {
     while(1<2) {
-        this->establishConnection();
-        
+        std::cout << "Accepting client...\n";
+        std::unique_ptr<ClientThread> clientThread(new ClientThread());
+        clientThread->setAcceptSocket(listenSocket, serverAddr);
         std::cout << "Creating a new thread for the client...\n";
-        ThreadArgs* threadArgs = new ThreadArgs();
-        //threadArgs->messageBuff = new char[512];
-        threadArgs->acceptSocket = acceptSocket;
-
-        //std::shared_ptr<ClientThread> clientThread(new ClientThread(*threadArgs));
-        std::unique_ptr<ClientThread> clientThread(new ClientThread(*threadArgs));
+        clientThread->start();
         /** move the ownership of the unique_ptr to the list */
         clientThreads.push_back(std::move(clientThread));
-        
-        for (auto& clientThread : clientThreads) {
-            clientThread->start();
-            sleep(1);
+       // for (auto& clientThread : clientThreads) {
+        //    clientThread->start();
+            /*sleep(1);
             clientThread->lockMutex();
             // ------ critical section -----
             if (!clientThread->loggedIn) {
@@ -83,19 +69,14 @@ void TCPServer::startServer() {
             // -----------------------------
             clientThread->signalCondition();
             clientThread->unlockMutex();
-
-            clientThread->join();
-        }
-        ++nrOfClients;
-        
-        dropConnections();
+        */
+        //}
     }
-    
 }
 
 void TCPServer::dropConnections() {
     for (auto& clientThread : clientThreads) {
-        if (!clientThread->loggedIn) {
+        if (!clientThread->loginRequest) {
             clientThread->closeSocket();
             clientThreads.remove(clientThread);
         }

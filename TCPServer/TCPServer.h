@@ -28,8 +28,6 @@ public:
     /** initializes the various host attributes and the listening socket */
     void initServer();
     void startServer();
-    /** creates the connection and sets the accepting socket */
-    void establishConnection();
     /** removes the threads for users who are logged out */
     void dropConnections();
     
@@ -38,18 +36,20 @@ private:
     int port;
     /** socket the server uses as a temporary entry point for incoming connections */
     int listenSocket;
-    /** after a new connection is detected on the listenSocket, this socket becomes the main connection to the outside world */
-    int acceptSocket;
+    /** after a new connection is detected on the listenSocket, this socket becomes the main connection to the outside world 
+     * the client's thread sets this socket
+     */
+    //int acceptSocket;
     struct sockaddr_in serverAddr;
     /** error message for the various system calls */
     std::string errorMsg;
     /** return value for the various system calls */
     int res;
-    /** currently logged in users' count */
-    int nrOfClients;
     /** thread for every user */
-    //std::list<std::shared_ptr<ClientThread>> clientThreads;
     std::list<std::unique_ptr<ClientThread>> clientThreads;
+    /** pointer to the list of clients, as that will be shared among everyone of them */
+    //typedef std::shared_ptr<std::list<std::unique_ptr<ClientThread>>> ClientList;
+    //ClientList clientsPtr;
 };
 
 #endif /* TCPSERVER_H */

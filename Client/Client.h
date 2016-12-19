@@ -38,8 +38,9 @@ signals:
 	void receivedPackage(QString package);
 
 public slots:
-    void onConnectToHost();
-    void onReadMsg();
+	void onLoginRequest();
+	void onReadMsg();
+	void onLogoutRequest();
 };
 
 #endif // CLIENT_H

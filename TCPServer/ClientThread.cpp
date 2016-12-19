@@ -8,17 +8,13 @@
 
 #include "ClientThread.h"
 
-ClientThread::ClientThread(ThreadArgs& threadArgs) : MyThread(threadArgs), threadArgs(&threadArgs) {
+ClientThread::ClientThread() {
     /** initializing mutex and condition variables */
     pthread_mutex_init(&mutex, NULL);
     pthread_cond_init(&condition, NULL);
 }
 
 ClientThread::~ClientThread() {
-    if (threadArgs != NULL) {
-        delete threadArgs;
-        threadArgs = NULL;
-    }
     pthread_mutex_destroy(&mutex);
     pthread_cond_destroy(&condition);
 }
@@ -36,27 +32,35 @@ void ClientThread::signalCondition() {
 }
 
 void ClientThread::closeSocket() {
-    close(threadArgs->acceptSocket);
+    close(acceptSocket);
 }
 
-void* ClientThread::run() {
-    /*if (!loggedIn) {
-        onTimeRequest();
-    }*/
-    if (!messageRequest) {
-        onMessageRequest();
+void ClientThread::setAcceptSocket(int& listenSocket, struct sockaddr_in serverAddr) {
+    socklen_t addrSize = sizeof(serverAddr);
+    acceptSocket = accept(listenSocket, NULL, NULL);
+    if (acceptSocket < 0) {
+        errorMsg = "error while creating the accepting socket";
+        error(errorMsg.c_str());
     }
 }
 
-void ClientThread::onTimeRequest() {
+void* ClientThread::run() {
+    while (!logoutRequest) {
+        std::string package = readPackage();
+        std::cout << "received message from client: " << package << "\n";
+        
+        sleep(3);
+    }
+}
+
+void ClientThread::onLoginRequest() {
     /** lock the mutex and wait for signal */
     pthread_mutex_lock(&mutex);
-    while(!loggedIn) {
+    while(!loginRequest) {
         /** automatically and atomically unlocks the mutex while it waits */
         pthread_cond_wait(&condition, &mutex);
         std::cout << "Preparing the message for the client...\n";
-        int acceptSocket = threadArgs->acceptSocket;
-        int buffSize = sizeof(threadArgs->messageBuff);
+        int buffSize = sizeof(messageBuff);
         char sendBuff[buffSize];
 
         // std::memcpy(sendBuff, threadData->sendBuff, lenOfBuff+1);
@@ -87,26 +91,43 @@ void ClientThread::onMessageRequest() {
         /** automatically and atomically unlocks the mutex while it waits */
         pthread_cond_wait(&condition, &mutex);
         std::cout << "Preparing the message for the client...\n";
-        int acceptSocket = threadArgs->acceptSocket;
-        int buffSize = sizeof(threadArgs->messageBuff);
+        int buffSize = sizeof(messageBuff);
         char sendBuff[buffSize];
-        std::string message = this->readMessage();
+        std::string message = readPackage();
     }
     pthread_mutex_unlock(&mutex);
 }
 
-std::string ClientThread::readMessage() {
-    int buffSize = sizeof(threadArgs->messageBuff);
-    char msgBuff[512];
-    int acceptSocket = threadArgs->acceptSocket;
+void ClientThread::onLogoutRequest() {
+    close(acceptSocket);
+}
+
+std::string ClientThread::readPackage() {
+    int buffSize = sizeof(messageBuff);
+    char msgBuff[1024];
+    
+    /*fd_set readfd;
+    FD_ZERO(&readfd);
+    FD_SET(acceptSocket, &readfd);
+
+    timeval tv;
+    tv.tv_sec = 999;
+    tv.tv_usec = 0;
+    int res = select(acceptSocket + 1, &readfd, NULL, NULL, &tv);
+    if (res > 0) {
+        std::cout << "res: " << res << "\n";
+        std::cout << "read socket: " << acceptSocket;*/
+    
     int res = recv(acceptSocket, msgBuff, buffSize, 0);
+    std::cout << "  bytes: " << res << "\n";
     if (res < 0) {
         errorMsg = "error when receiving the message from the client!\n";
-	error(errorMsg.c_str());
+        error(errorMsg.c_str());
     }
     msgBuff[res] = '\0';
-    std::cout << "received message from client: " << msgBuff << "\n";
-    return " ";
+    //std::cout << "received message from client: " << msgBuff << "\n";
+    // }
+    return msgBuff;
 }
 
 std::string ClientThread::getTime() {

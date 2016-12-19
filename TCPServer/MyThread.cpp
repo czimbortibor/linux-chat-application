@@ -8,7 +8,7 @@
 
 #include "MyThread.h"
 
-MyThread::MyThread(ThreadArgs& threadArgs) : threadArgs(&threadArgs) { 
+MyThread::MyThread() { 
 }
 
 MyThread::~MyThread() {

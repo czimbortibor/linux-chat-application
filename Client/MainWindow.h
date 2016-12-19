@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QSharedPointer>
+#include <QMessageBox>
 
 #include "LoginDialog.h"
 #include "Client.h"

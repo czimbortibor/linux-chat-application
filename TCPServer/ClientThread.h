@@ -19,13 +19,15 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <sys/select.h>
 
 #include "MyThread.h"
 #include "User.h"
+#include "Packaging.h"
 
 class ClientThread : public MyThread {
 public:
-    ClientThread(ThreadArgs& threadArgs);
+    ClientThread();
     virtual ~ClientThread();
     
     void lockMutex();
@@ -35,22 +37,29 @@ public:
     
     virtual void* run();
     
-    void onTimeRequest();
+    void onLoginRequest();
     void onMessageRequest();
+    void onLogoutRequest();
     
-    bool loggedIn = false;
+    bool loginRequest = false;
     bool messageRequest = false;
+    bool logoutRequest = false;
+    
+    void setAcceptSocket(int& listenSocket, struct sockaddr_in serverAddr);
     
 private:
-    ThreadArgs* threadArgs;
+    int acceptSocket;
+    char messageBuff[1024];
     pthread_mutex_t mutex;
     pthread_cond_t condition;
     
     /** basic information about a user */
     User user;
-    std::string readMessage();
+    std::string readPackage();
     /** get the current system date + time */
     std::string getTime();
+    
+    Packaging packaging;
 };
 
 #endif /* CLIENTTHREAD_H */

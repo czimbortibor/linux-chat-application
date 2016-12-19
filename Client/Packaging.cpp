@@ -1,14 +1,13 @@
 
-/* 
+/*
  * File:   Packaging.cpp
  * Author: czimbortibor
- * 
+ *
  * Created on December 17, 2016, 8:47 PM
  */
 
 #include "Packaging.h"
 
-<<<<<<< HEAD
 Packaging::Packaging() {}
 
 Packaging::Packaging(const std::string& receiver, std::size_t msglength, const std::string& message, const std::string& sender) {
@@ -90,28 +89,8 @@ std::string Packaging::identifyRequest(std::string package) {
 		if (token.compare("disconnect") == 0) {
 			return "disconnect_request";
 		}
-		// erase the token + the glue
+		// erase token + glue
 		package.erase(0, pos + 1);
 	}
 	return "unidentifiable";
-=======
-Packaging::Packaging(std::string message) {
-	this->message = message;
 }
-
-Packaging::~Packaging() {
-}
-
-void Packaging::createLoginPackage() {
-
-}
-
-void Packaging::createGlobalPackage() {
-
-}
-
-void Packaging::createPivatePackage() {
-
->>>>>>> 1a123a584b2b361786849f2a6f4730d715edc42b
-}
-
