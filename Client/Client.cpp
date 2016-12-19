@@ -1,5 +1,6 @@
 #include "Client.h"
 
+
 Client::Client(QObject* parent) : QObject(parent) {}
 
 Client::Client(QString serverAddr, QString portNr) {
@@ -53,7 +54,6 @@ void Client::onReadMsg() {
 	/** reads the whole message in one go. MAY NOT WORK in all cases */
     tcpSocket->waitForBytesWritten();
     QByteArray res = tcpSocket->readAll();
-
 	QString package = QString::fromLatin1(res);
 	packaging.parsePackage(package.toStdString());
 	QString sender = QString::fromStdString(packaging.getSender());

@@ -30,18 +30,26 @@ std::string Packaging::createLoginPackage(const std::string& username) {
     return constructPackage();
 }
 
+std::string Packaging::createTimePackage(const std::string& message) {
+    receiver = "self";
+    this->message = message;
+    return constructPackage();
+}
+
 std::string Packaging::createDisconnectPackage() {
     message = "disconnect";
     return constructPackage();
 }
 
-std::string Packaging::createGlobalPackage() {
-    receiver = "global";
+std::string Packaging::createGlobalPackage(const std::string& message) {
+    this->receiver = "global";
+    this->message = message;
     return constructPackage();
 }
 
-std::string Packaging::createPivatePackage(const std::string& receiver) {
+std::string Packaging::createPivatePackage(const std::string& receiver, const std::string& message) {
     this->receiver = receiver;
+    this->message = message;
     return constructPackage();
 }
 
@@ -56,11 +64,11 @@ void Packaging::parsePackage(std::string package) {
     std::string token;
     std::deque<std::string> tokens;
     while ((pos = package.find(glue)) != std::string::npos) {
-            // next token
-            token = package.substr(0, pos);
-            tokens.push_back(token);
-            // erase the token + the glue
-            package.erase(0, pos + 1);
+        // next token
+        token = package.substr(0, pos);
+        tokens.push_back(token);
+        // erase the token + the glue
+        package.erase(0, pos + 1);
     }
 
     // package: receiver|msglength|message|sender
@@ -78,19 +86,22 @@ std::string Packaging::identifyRequest(std::string package) {
     size_t pos = 0;
     std::string token;
     while ((pos = package.find(glue)) != std::string::npos) {
-            // next token
-            token = package.substr(0, pos);
-            if (token.compare("global") == 0) {
-                    return "global_package";
-            }
-            if (token.compare("server") == 0) {
-                    return "login_request";
-            }
-            if (token.compare("disconnect") == 0) {
-                    return "disconnect_request";
-            }
-            // erase token + glue
-            package.erase(0, pos + 1);
+        // next token
+        token = package.substr(0, pos);
+        if (token.compare("self") == 0) {
+            return "time_package";
+        }
+        if (token.compare("global") == 0) {
+            return "global_package";
+        }
+        if (token.compare("server") == 0) {
+            return "login_request";
+        }
+        if (token.compare("disconnect") == 0) {
+            return "disconnect_request";
+        }
+        // erase token + glue
+        package.erase(0, pos + 1);
     }
     return "unidentifiable";
 }

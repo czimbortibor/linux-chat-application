@@ -47,41 +47,48 @@ void ClientThread::setAcceptSocket(int& listenSocket, struct sockaddr_in serverA
 void* ClientThread::run() {
     while (!logoutRequest) {
         std::string package = readPackage();
-        std::cout << "received message from client: " << package << "\n";
+        if (package.length() != 0) {
+            std::cout << "received message from client: " << package << "\n";
+        }
         
+        std::string request;
+        //packaging.parsePackage(package);
+        request = packaging.identifyRequest(package);
+        std::cout << "request: " << request << "\n";
+        if (request.compare("login_request") == 0) {
+            onLoginRequest();
+        }
         sleep(3);
     }
 }
 
 void ClientThread::onLoginRequest() {
     /** lock the mutex and wait for signal */
-    pthread_mutex_lock(&mutex);
-    while(!loginRequest) {
+    //pthread_mutex_lock(&mutex);
+    //while(!loginRequest) {
         /** automatically and atomically unlocks the mutex while it waits */
-        pthread_cond_wait(&condition, &mutex);
+       // pthread_cond_wait(&condition, &mutex);
         std::cout << "Preparing the message for the client...\n";
         int buffSize = sizeof(messageBuff);
         char sendBuff[buffSize];
-
-        // std::memcpy(sendBuff, threadData->sendBuff, lenOfBuff+1);
 
         std::string serverTime = this->getTime();
         
         /** create the new User object */
         user = User(serverTime);
-        /** prepare the first package to be sent to the user, their login time */
-        
+        /** creat the first package to be sent to the user, their login time */
         snprintf(sendBuff, buffSize, "%.24s", serverTime.c_str());
-
+        std::string package = packaging.createTimePackage(sendBuff);
+        std::cout << "package: " << package << "\n";
         std::cout << "Sending the date+time to the client...\n";
-        int res = send(acceptSocket, sendBuff, strlen(sendBuff), 0);
+        int res = send(acceptSocket, package.c_str(), package.length(), 0);
         if (res < 0) {
             errorMsg = "Error while sending the message to the client!";
             error(errorMsg.c_str());
         }
         std::cout << "Message sent to the client.\n" ;
-    }
-    pthread_mutex_unlock(&mutex);
+    //}
+    //pthread_mutex_unlock(&mutex);
 }
 
 void ClientThread::onMessageRequest() {

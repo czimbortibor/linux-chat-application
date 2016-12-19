@@ -39,12 +39,14 @@ public:
 
     /** package used for login requests, the message contains the username */
     std::string createLoginPackage(const std::string& username);
+    /** package used by the server after the user's login */
+    std::string createTimePackage(const std::string& message);
     /** package used for disconnect requests */
     std::string createDisconnectPackage();
     /** package used for sending message to every online user */
-    std::string createGlobalPackage();
+    std::string createGlobalPackage(const std::string& message);
     /** private message to a specific user */
-    std::string createPivatePackage(const std::string& receiver);
+    std::string createPivatePackage(const std::string& receiver, const std::string& message);
 
     void parsePackage(std::string package);
 

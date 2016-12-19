@@ -12,7 +12,7 @@
 #include <string>
 #include <deque>
 
-/**	Realizes the protocol inside the chat application.
+/**     Realizes the protocol inside the chat application.
  *
  *	handles:
  *		- package assembling -> creates a package for a specific request
@@ -32,37 +32,39 @@
 */
 class Packaging {
 public:
-	Packaging();
-	Packaging(const std::string& receiver, std::size_t msglength, const std::string& message, const std::string& sender);
-	Packaging(std::size_t msglength, const std::string& message, const std::string& sender);
-	virtual ~Packaging();
+    Packaging();
+    Packaging(const std::string& receiver, std::size_t msglength, const std::string& message, const std::string& sender);
+    Packaging(std::size_t msglength, const std::string& message, const std::string& sender);
+    virtual ~Packaging();
 
-	/** package used for login requests, the message contains the username */
-	std::string createLoginPackage(const std::string& username);
-	/** package used for disconnect requests */
-	std::string createDisconnectPackage();
-	/** package used for sending message to every online user */
-	std::string createGlobalPackage();
-	/** private message to a specific user */
-	std::string createPivatePackage(const std::string& receiver);
+    /** package used for login requests, the message contains the username */
+    std::string createLoginPackage(const std::string& username);
+    /** package used by the server after the user's login */
+    std::string createTimePackage(const std::string& message);
+    /** package used for disconnect requests */
+    std::string createDisconnectPackage();
+    /** package used for sending message to every online user */
+    std::string createGlobalPackage(const std::string& message);
+    /** private message to a specific user */
+    std::string createPivatePackage(const std::string& receiver, const std::string& message);
 
-	void parsePackage(std::string package);
+    void parsePackage(std::string package);
 
-	/** parses the package and returns the request's name */
-	std::string identifyRequest(std::string package);
+    /** parses the package and returns the request's name */
+    std::string identifyRequest(std::string package);
 
-	std::string getMessage() const { return message; }
-	std::string getSender() const { return sender; }
+    std::string getMessage() const { return message; }
+    std::string getSender() const { return sender; }
 
 private:
-	std::string receiver;
-	std::size_t msglength;
-	std::string message;
-	std::string sender;
+    std::string receiver;
+    std::size_t msglength;
+    std::string message;
+    std::string sender;
 
-	const char glue = '|';
-	/** joins the fields together */
-	std::string constructPackage();
+    const char glue = '|';
+    /** joins the fields together */
+    std::string constructPackage();
 };
 
 #endif /* PACKAGING_H */
