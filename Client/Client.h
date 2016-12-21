@@ -17,10 +17,10 @@ friend class MainWindow;
 
 public:
 	explicit Client(QObject* parent = 0);
-	Client(QString serverAddr = "127.0.0.1", QString portNr = "10013", QString username = "test");
+	Client(QString serverAddr = "127.0.0.1", QString portNr = "10013", QString username = "test user");
 
+	void connectToServer();
 	void sendPackage(QString package);
-
 	void setRequest(const QString& value) { request = value; }
 
 private:

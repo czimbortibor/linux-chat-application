@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QScopedPointer>
 #include <QSharedPointer>
 #include <QMessageBox>
 
@@ -31,9 +32,6 @@ private:
 	QSharedPointer<Client> client;
 
 	void initClient();
-
-signals:
-    void connectClient();
 
 private slots:
 	void onSignIn(QString username, QString password, QString serverAddr, QString port);

@@ -1,18 +1,20 @@
 #include "LoginDialog.h"
 #include "ui_logindialog.h"
 
+#include <QDebug>
+
 LoginDialog::LoginDialog(QWidget* parent) : QDialog(parent), ui(new Ui::LoginDialog) {
     ui->setupUi(this);
 	this->setFixedSize(this->size());
-	connect(ui->btnOk, &QPushButton::clicked, this, &LoginDialog::on_btnOk_clicked);
-	connect(ui->btnCancel, &QPushButton::clicked, this, &LoginDialog::on_btnCancel_clicked);
+	connect(ui->btnOk, &QPushButton::clicked, this, &LoginDialog::onOKClicked);
+	connect(ui->btnCancel, &QPushButton::clicked, this, &LoginDialog::onCancelClicked);
 }
 
 LoginDialog::~LoginDialog() {
     delete ui;
 }
 
-void LoginDialog::on_btnOk_clicked() {
+void LoginDialog::onOKClicked() {
 	// TODO: check input
 	username = ui->editUsername->text();
 	password = ui->editPassword->text();
@@ -23,6 +25,6 @@ void LoginDialog::on_btnOk_clicked() {
 	this->close();
 }
 
-void LoginDialog::on_btnCancel_clicked() {
+void LoginDialog::onCancelClicked() {
 	this->close();
 }

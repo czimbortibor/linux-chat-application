@@ -4,8 +4,8 @@
 Client::Client(QObject* parent) : QObject(parent) {}
 
 Client::Client(QString serverAddr, QString portNr, QString username) {
-	QTcpSocket* tcpSocketPtr = new QTcpSocket();
-	tcpSocket = QSharedPointer<QTcpSocket>(tcpSocketPtr);
+	// QTcpSocket* tcpSocketPtr = new QTcpSocket();
+	tcpSocket = QSharedPointer<QTcpSocket>::create();
 	//QDataStream* dataStreamPtr = new QDataStream();
 	//dataStream = QSharedPointer<QDataStream>(dataStreamPtr);
 	//dataStream->setDevice(tcpSocket.data());
@@ -17,17 +17,19 @@ Client::Client(QString serverAddr, QString portNr, QString username) {
 	connect(tcpSocket.data(), &QIODevice::readyRead, this, &Client::onReadMsg);
 }
 
-void Client::onLoginRequest() {
-	tcpSocket->abort();
+void Client::connectToServer() {
 	qDebug() << "connecting to " << serverAddr << ":" << portNr;
 
-    /** connect to the main server */
+	/** connect to the main server */
 	tcpSocket->connectToHost(serverAddr, portNr.toInt());
-	if (tcpSocket->waitForConnected()) {
+	if (tcpSocket->waitForConnected(10000)) {
 		qDebug() << "connected!";
 	} else {
 		qDebug() << "could not connect!";
 	}
+}
+
+void Client::onLoginRequest() {
 	std::string package = packaging.createLoginPackage(username.toStdString());
 	sendPackage(QString::fromStdString(package));
 }

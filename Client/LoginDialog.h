@@ -31,8 +31,8 @@ signals:
 	void signIn(QString username, QString password, QString serverAddr, QString port);
 
 private slots:
-	void on_btnOk_clicked();
-	void on_btnCancel_clicked();
+	void onOKClicked();
+	void onCancelClicked();
 };
 
 #endif // LOGINDIALOG_H

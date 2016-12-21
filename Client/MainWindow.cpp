@@ -3,8 +3,7 @@
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
 	ui->setupUi(this);
-	LoginDialog* dialogPtr = new LoginDialog(this);
-	loginDialog = QSharedPointer<LoginDialog>(dialogPtr);
+	loginDialog = QSharedPointer<LoginDialog>::create(this);
 	loginDialog->show();
 
 	connect(loginDialog.data(), &LoginDialog::signIn, this, &MainWindow::onSignIn); // data(): extracts the raw pointer
@@ -20,16 +19,12 @@ void MainWindow::onSignIn(QString username, QString password, QString serverAddr
 	this->password = password;
 	this->serverAddr = serverAddr;
 	this->port = port;
-
 	initClient();
 }
 
 void MainWindow::initClient() {
 	QString username = this->username;
-	Client* clientPtr = new Client(serverAddr, port, username);
-	client = QSharedPointer<Client>(clientPtr);
-
-	connect(this, &MainWindow::connectClient, client.data(), &Client::onLoginRequest);
+	client = QSharedPointer<Client>::create(serverAddr, port, username);
 
     typedef void (QAbstractSocket::*QAbstractSocketErrorSignal)(QAbstractSocket::SocketError);
 	connect(client->tcpSocket.data(), static_cast<QAbstractSocketErrorSignal>(&QAbstractSocket::error), this, &MainWindow::onDisplayError);
@@ -39,7 +34,7 @@ void MainWindow::initClient() {
 
 	QString request = "login_request";
 	client->setRequest(request);
-    emit connectClient();
+	client->connectToServer();
 	this->show();
 }
 
