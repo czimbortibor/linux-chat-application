@@ -8,6 +8,7 @@
 
 #include "Packaging.h"
 
+
 Packaging::Packaging() {}
 
 Packaging::Packaging(const std::string& receiver, std::size_t msglength, const std::string& message, const std::string& sender) {
@@ -26,37 +27,37 @@ Packaging::Packaging(std::size_t msglength, const std::string& message, const st
 Packaging::~Packaging() {}
 
 std::string Packaging::createLoginPackage(const std::string& username) {
-	receiver = "server";
-    message = username;
-	sender = " ";
+    this->receiver = "server";
+    this->message = username;
+    this->sender = " ";
     return constructPackage();
 }
 
 std::string Packaging::createTimePackage(const std::string& message) {
-    receiver = "self";
+    this->receiver = "self";
     this->message = message;
-	sender = " ";
+    this->sender = " ";
     return constructPackage();
 }
 
 std::string Packaging::createDisconnectPackage() {
-	receiver = " ";
-    message = "disconnect";
-	sender = " ";
+    this->receiver = " ";
+    this->message = "disconnect";
+    this->sender = " ";
     return constructPackage();
 }
 
 std::string Packaging::createGlobalPackage(const std::string& message, const std::string& sender) {
     this->receiver = "global";
     this->message = message;
-	this->sender = sender;
+    this->sender = sender;
     return constructPackage();
 }
 
 std::string Packaging::createPivatePackage(const std::string& receiver, const std::string& message, const std::string& sender) {
     this->receiver = receiver;
     this->message = message;
-	this->sender = sender;
+    this->sender = sender;
     return constructPackage();
 }
 
@@ -73,13 +74,13 @@ void Packaging::parsePackage(std::string package) {
     while ((pos = package.find(glue)) != std::string::npos) {
         // next token
         token = package.substr(0, pos);
-		tokens.push_back(token);
+	tokens.push_back(token);
         // erase the token + the glue
         package.erase(0, pos + 1);
     }
 
     // package: receiver|msglength|message|sender
-	receiver = tokens[0];
+    receiver = tokens[0];
     tokens.pop_front();
     msglength = std::stoi(tokens[0]);
     tokens.pop_front();
@@ -104,7 +105,7 @@ std::string Packaging::identifyRequest(std::string package) {
             return "login_request";
         }
         if (token.compare("disconnect") == 0) {
-			return "logout_request";
+            return "logout_request";
         }
         // erase token + glue
         package.erase(0, pos + 1);

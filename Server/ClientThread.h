@@ -28,19 +28,13 @@
 #include "Packaging.h"
 
 
+class TCPServer;
+
 class ClientThread : public MyThread {
     typedef std::shared_ptr<std::list<std::unique_ptr<ClientThread>>> UserList;
 public:
-    explicit ClientThread(UserList usersPtr, int acceptSocket);
+    explicit ClientThread(TCPServer& tcpserver, UserList usersPtr, int acceptSocket);
     virtual ~ClientThread();
-    
-    void lockMutex();
-    void unlockMutex();
-    void signalCondition();
-    /** automatically and atomically unlocks the mutex while it waits */
-    void waitCondition();
-    
-    void closeSocket();
     
     virtual void* run();
     
@@ -50,13 +44,11 @@ public:
     
     bool logoutRequest = false;
     
-    void setAcceptSocket(int& listenSocket, struct sockaddr_in serverAddr);
+    void closeSocket();
     
 private:
     int acceptSocket;
     char messageBuff[1024];
-    pthread_mutex_t mutex;
-    pthread_cond_t condition;
     
     /** basic information about a user */
     User user;
@@ -65,6 +57,8 @@ private:
     /** get the current system date + time */
     std::string getTime();
     
+    /** a reference back to the server */
+    std::shared_ptr<TCPServer> tcpserver;
     Packaging packaging;
     UserList usersPtr;
 };

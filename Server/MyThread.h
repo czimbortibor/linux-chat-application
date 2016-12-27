@@ -37,10 +37,7 @@ protected:
     std::string errorMsg;
     /** arguments for the thread */
     ThreadArgs* threadArgs;
-    
-    virtual void lockMutex() = 0;
-    virtual void unlockMutex() = 0;
-    virtual void signalCondition() = 0;
+
     virtual void* run() = 0;
 };
 

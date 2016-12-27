@@ -4,7 +4,6 @@
 Client::Client(QObject* parent) : QObject(parent) {}
 
 Client::Client(QString serverAddr, QString portNr, QString username) {
-	// QTcpSocket* tcpSocketPtr = new QTcpSocket();
 	tcpSocket = QSharedPointer<QTcpSocket>::create();
 	//QDataStream* dataStreamPtr = new QDataStream();
 	//dataStream = QSharedPointer<QDataStream>(dataStreamPtr);
@@ -15,6 +14,7 @@ Client::Client(QString serverAddr, QString portNr, QString username) {
 	this->username = username;
 
 	connect(tcpSocket.data(), &QIODevice::readyRead, this, &Client::onReadMsg);
+	connect(this, &Client::login, this, &Client::onLoginRequest);
 }
 
 void Client::connectToServer() {
@@ -27,6 +27,7 @@ void Client::connectToServer() {
 	} else {
 		qDebug() << "could not connect!";
 	}
+	emit login();
 }
 
 void Client::onLoginRequest() {
@@ -47,7 +48,7 @@ void Client::onGlobalPackage(QString message) {
 void Client::onReadMsg() {
     qDebug() << "starting the transaction...";
 
-    /** read the message in parts */
+	// read the message in parts
     /*dataStream->startTransaction();
     QString dataBlock;
     *dataStream >> dataBlock;
@@ -59,14 +60,23 @@ void Client::onReadMsg() {
     }
     qDebug() << "closing transaction...";*/
 
-	/** reads the whole message in one go. MAY NOT WORK in all cases */
+	// reads the whole message in one go. MAY NOT WORK in all cases
     tcpSocket->waitForBytesWritten();
     QByteArray res = tcpSocket->readAll();
 	QString package = QString::fromLatin1(res);
 	packaging.parsePackage(package.toStdString());
 	QString sender = QString::fromStdString(packaging.getSender());
 	QString message = QString::fromStdString(packaging.getMessage());
-	QString output = sender + ": "+ message;
+	/** string to be displayed on the message wall */
+	QString output;
+	// on login the server sends back the current time
+	if (sender == " ") {
+		output = "Login time: " + message;
+	}
+	// normal message from a user
+	else {
+		output = sender + ": "+ message;
+	}
 
 	emit receivedPackage(output);
 }

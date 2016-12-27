@@ -11,9 +11,10 @@
 TCPServer::TCPServer(const char* address, int port) : address(address) {
     this->port = port;
     usersPtr = std::make_shared<std::list<std::unique_ptr<ClientThread>>>();
-}
-
-TCPServer::TCPServer(const TCPServer& original) {
+    
+    /** initializing mutex and condition variables */
+    pthread_mutex_init(&mutex, NULL);
+    pthread_cond_init(&condition, NULL);
 }
 
 TCPServer::~TCPServer() {
@@ -21,6 +22,8 @@ TCPServer::~TCPServer() {
         delete address;
         address = NULL;
     }
+    pthread_mutex_destroy(&mutex);
+    pthread_cond_destroy(&condition);
 }
 
 void TCPServer::initServer() {
@@ -48,25 +51,25 @@ void TCPServer::listenServer() {
         errorMsg = "error while listening on socket";
         error(errorMsg.c_str());
     }
+    
+    std::cout << "Accepting client...\n";
+    socklen_t addrSize = sizeof(serverAddr);
+    acceptSocket = accept(listenSocket, NULL, NULL);
+    if (acceptSocket < 0) {
+        errorMsg = "error while creating the accepting socket";
+        error(errorMsg.c_str());
+    }
 }
 
 void TCPServer::startServer() {
     while(1<2) {
+        // creates a new socket for the connecting client
         listenServer();
-        std::cout << "Accepting client...\n";
-        socklen_t addrSize = sizeof(serverAddr);
-        acceptSocket = accept(listenSocket, NULL, NULL);
-        if (acceptSocket < 0) {
-            errorMsg = "error while creating the accepting socket";
-            error(errorMsg.c_str());
-        }
         
-        std::unique_ptr<ClientThread> clientThread(new ClientThread(usersPtr, acceptSocket));
-        /** creates the accept socket for the thread */
-        //clientThread->setAcceptSocket(listenSocket, serverAddr);
+        std::unique_ptr<ClientThread> clientThread(new ClientThread(*this, usersPtr, acceptSocket));
         std::cout << "Creating a new thread for the client...\n";
         clientThread->start();
-        /** move the ownership of the unique_ptr to the list and insert it into the list */
+        // move the ownership of the unique_ptr to the list and insert it into the list
         usersPtr->push_back(std::move(clientThread));
     }
 }

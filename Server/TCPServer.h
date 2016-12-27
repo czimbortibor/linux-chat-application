@@ -9,8 +9,6 @@
 #ifndef TCPSERVER_H
 #define TCPSERVER_H
 
-#include "ClientThread.h"
-
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -18,19 +16,26 @@
 
 #include <list>
 
+#include "ClientThread.h"
+
 typedef std::shared_ptr<std::list<std::unique_ptr<ClientThread>>> UserList;
 
 /** synchronous TCP server where every client is managed in their own separate thread */
 class TCPServer {
 public:
     TCPServer(const char* address = "127.0.0.1", int port = 10013);
-    TCPServer(const TCPServer& original);
     virtual ~TCPServer();
     
     /** initializes the various host attributes and the listening socket */
     void initServer();
     void listenServer();
     void startServer();
+    
+    void lockMutex() { pthread_mutex_lock(&mutex); }
+    void unlockMutex() { pthread_mutex_unlock(&mutex); }
+    void signalCondition() { pthread_cond_signal(&condition); }
+    /** automatically and atomically unlocks the mutex while it waits */
+    void waitCondition() { pthread_cond_wait(&condition, &mutex); }
     
 private:
     const char* address;
@@ -48,6 +53,9 @@ private:
     std::list<std::unique_ptr<ClientThread>> clientThreads;
     /** pointer to the list of clients, as that will be shared among every one of them */
     UserList usersPtr;
+    
+    pthread_mutex_t mutex;
+    pthread_cond_t condition;
 };
 
 #endif /* TCPSERVER_H */

@@ -7,49 +7,22 @@
  */
 
 #include "ClientThread.h"
+#include "TCPServer.h"
 
 typedef std::shared_ptr<std::list<std::unique_ptr<ClientThread>>> UserList;
 
-ClientThread::ClientThread(UserList usersPtr, int acceptSocket) : usersPtr(usersPtr) {
+ClientThread::ClientThread(TCPServer& tcpserver, UserList usersPtr, int acceptSocket) : tcpserver(&tcpserver), 
+        usersPtr(usersPtr) {
     this->acceptSocket = acceptSocket;
-    /** initializing mutex and condition variables */
-    pthread_mutex_init(&mutex, NULL);
-    pthread_cond_init(&condition, NULL);
 
 }
 
 ClientThread::~ClientThread() {
-    pthread_mutex_destroy(&mutex);
-    pthread_cond_destroy(&condition);
-}
 
-void ClientThread::lockMutex() {
-    pthread_mutex_lock(&mutex);
-}
-
-void ClientThread::unlockMutex() {
-    pthread_mutex_unlock(&mutex);
-}
-
-void ClientThread::signalCondition() {
-    pthread_cond_signal(&condition);
-}
-
-void ClientThread::waitCondition() {
-    pthread_cond_wait(&condition, &mutex);
 }
 
 void ClientThread::closeSocket() {
     close(acceptSocket);
-}
-
-void ClientThread::setAcceptSocket(int& listenSocket, struct sockaddr_in serverAddr) {
-    socklen_t addrSize = sizeof(serverAddr);
-    acceptSocket = accept(listenSocket, NULL, NULL);
-    if (acceptSocket < 0) {
-        errorMsg = "error while creating the accepting socket";
-        error(errorMsg.c_str());
-    }
 }
 
 void* ClientThread::run() {
@@ -80,17 +53,14 @@ void* ClientThread::run() {
 
 void ClientThread::sendPackage(const std::string& package) {
     int res = send(acceptSocket, package.c_str(), package.length(), 0);
-        if (res < 0) {
-            errorMsg = "Error while sending the message to the client!";
-            error(errorMsg.c_str());
-        }
-        std::cout << "Message sent to the client.\n" ;
+    if (res < 0) {
+        errorMsg = "Error while sending the message to the client!";
+        error(errorMsg.c_str());
+    }
+    std::cout << "Message sent to the client.\n" ;
 }
 
 void ClientThread::onLoginRequest() {
-    lockMutex();
-
-    std::cout << "Preparing the message for the client...\n";
     int buffSize = sizeof(messageBuff);
     char sendBuff[buffSize];
 
@@ -98,14 +68,12 @@ void ClientThread::onLoginRequest() {
 
     /** create the new User object */
     user = User(serverTime);
-    /** creat the first package to be sent to the user, their login time */
+    /** create the first package to be sent to the user, their login time */
     snprintf(sendBuff, buffSize, "%.24s", serverTime.c_str());
     std::string package = packaging.createTimePackage(sendBuff);
     std::cout << "package: " << package << "\n";
     std::cout << "Sending the date+time to the client...\n";
     sendPackage(package);
-
-    unlockMutex();
 }
 
 void ClientThread::onGlobalMessageRequest(std::string package) {
@@ -115,26 +83,22 @@ void ClientThread::onGlobalMessageRequest(std::string package) {
     std::string message = packaging.getMessage();
     std::cout << "message: " << message << "\n";
     auto list = usersPtr.get();
-     std::list<std::unique_ptr<ClientThread>>::const_iterator iterator;
-    //std::cout << "number of online users: " << list->size() << "\n";
+    std::list<std::unique_ptr<ClientThread>>::const_iterator iterator;
+    // std::cout << "number of online users: " << list->size() << "\n";
+    
+    tcpserver->lockMutex();
     for (iterator = list->begin(); iterator != list->end(); ++iterator) {
-        pthread_mutex_lock(&mutex);
         (**iterator).sendPackage(package);
-        pthread_mutex_unlock(&mutex);
     }
+    tcpserver->unlockMutex();
+    
 }
 
 void ClientThread::onLogoutRequest() {
     std::cout << "Disconnecting user..\n";
     // TODO remove the disconnected user from the online user's list
-    //*usersPtr->remove(this);
-
-    // TODO: waitCondition();
-   /* lockMutex();
-    logoutRequest = true;
-    signalCondition();
-    unlockMutex();
-    */
+    
+   
     closeSocket();
     std::cout << "User disconnected\n";
     pthread_exit(NULL);

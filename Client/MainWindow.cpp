@@ -32,14 +32,12 @@ void MainWindow::initClient() {
 	connect(client.data(), &Client::receivedPackage, this, &MainWindow::onReceivedMessage);
 	connect(this->ui->btnLogout, &QPushButton::clicked, client.data(), &Client::onLogoutRequest);
 
-	QString request = "login_request";
-	client->setRequest(request);
 	client->connectToServer();
 	this->show();
 }
 
 void MainWindow::onDisplayError(QAbstractSocket::SocketError socketError) {
-	QString title = "Connection error!";
+	QString title = tr("Connection error!");
 	switch (socketError) {
 		case QAbstractSocket::HostNotFoundError:
 			QMessageBox::information(this, title,

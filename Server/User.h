@@ -13,12 +13,13 @@
 
 class User {
 public:
-    User(std::string loginTime = "");
-    User(const User& original);
-    virtual ~User();
+    User(std::string loginTime = "") { this->loginTime = loginTime; }
+    virtual ~User() {} 
 
     std::string getUsername() const { return username; }
     std::string getLoginTime() const { return loginTime; }
+    
+    std::string setLoginTime(const std::string& value) { loginTime = value; }
 
 private:
     std::string username;

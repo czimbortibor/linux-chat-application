@@ -21,7 +21,6 @@ public:
 
 	void connectToServer();
 	void sendPackage(QString package);
-	void setRequest(const QString& value) { request = value; }
 
 private:
 	QString serverAddr;
@@ -31,11 +30,11 @@ private:
 	QSharedPointer<QDataStream> dataStream;
 
 	Packaging packaging;
-	QString request = "login_request";
 
 signals:
     void readyRead();
     void error();
+	void login();
 	void receivedPackage(QString package);
 
 public slots:
