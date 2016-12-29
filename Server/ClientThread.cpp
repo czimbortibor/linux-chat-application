@@ -11,7 +11,7 @@
 
 typedef std::shared_ptr<std::list<std::unique_ptr<ClientThread>>> UserList;
 
-ClientThread::ClientThread(TCPServer& tcpserver, UserList usersPtr, int acceptSocket) : tcpserver(&tcpserver), 
+ClientThread::ClientThread(TCPServer& tcpserver, UserList usersPtr, int acceptSocket) : tcpserver(&tcpserver),
         usersPtr(usersPtr) {
     this->acceptSocket = acceptSocket;
 
@@ -82,23 +82,25 @@ void ClientThread::onGlobalMessageRequest(std::string package) {
     packaging.parsePackage(package);
     std::string message = packaging.getMessage();
     std::cout << "message: " << message << "\n";
+
+    // send the message to every online user
     auto list = usersPtr.get();
     std::list<std::unique_ptr<ClientThread>>::const_iterator iterator;
     // std::cout << "number of online users: " << list->size() << "\n";
-    
+
     tcpserver->lockMutex();
     for (iterator = list->begin(); iterator != list->end(); ++iterator) {
         (**iterator).sendPackage(package);
     }
     tcpserver->unlockMutex();
-    
+
 }
 
 void ClientThread::onLogoutRequest() {
     std::cout << "Disconnecting user..\n";
     // TODO remove the disconnected user from the online user's list
-    
-   
+    //tcpserver->removeClient(*this);
+
     closeSocket();
     std::cout << "User disconnected\n";
     pthread_exit(NULL);

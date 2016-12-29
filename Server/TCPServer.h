@@ -26,10 +26,8 @@ public:
     TCPServer(const char* address = "127.0.0.1", int port = 10013);
     virtual ~TCPServer();
     
-    /** initializes the various host attributes and the listening socket */
-    void initServer();
-    void listenServer();
     void startServer();
+    void removeClient(ClientThread& clientThread);
     
     void lockMutex() { pthread_mutex_lock(&mutex); }
     void unlockMutex() { pthread_mutex_unlock(&mutex); }
@@ -56,6 +54,10 @@ private:
     
     pthread_mutex_t mutex;
     pthread_cond_t condition;
+    
+    /** initializes the various host attributes and the listening socket */
+    void initServer();
+    void listenServer();
 };
 
 #endif /* TCPSERVER_H */

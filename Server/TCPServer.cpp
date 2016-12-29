@@ -62,6 +62,7 @@ void TCPServer::listenServer() {
 }
 
 void TCPServer::startServer() {
+    initServer();
     while(1<2) {
         // creates a new socket for the connecting client
         listenServer();
@@ -72,4 +73,9 @@ void TCPServer::startServer() {
         // move the ownership of the unique_ptr to the list and insert it into the list
         usersPtr->push_back(std::move(clientThread));
     }
+}
+
+void TCPServer::removeClient(ClientThread& clientThread) {
+    //std::unique_ptr<ClientThread> clientPtr = static_cast<std::unique_ptr<ClientThread>>(&clientThread);
+    //usersPtr->remove(clientPtr);
 }
