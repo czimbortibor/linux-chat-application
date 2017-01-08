@@ -23,9 +23,9 @@
 
 #include <list>
 
+#include "../util/Packaging.h"
 #include "MyThread.h"
 #include "User.h"
-#include "Packaging.h"
 
 
 class TCPServer;
@@ -38,13 +38,17 @@ public:
     
     virtual void* run();
     
-    void onLoginRequest();
+    void onLoginRequest(const std::string& incomingPackage);
     void onLogoutRequest();
-    void onGlobalMessageRequest(std::string package);
+    void onGlobalMessageRequest(const std::string& package);
     
     bool logoutRequest = false;
     
     void closeSocket();
+    
+    /** get the current system date + time */
+    std::string getTime();
+    std::string getUsername();
     
 private:
     int acceptSocket;
@@ -53,10 +57,9 @@ private:
     /** basic information about a user */
     User user;
     void sendPackage(const std::string& package);
+    /** reads the incoming package from the user */
     std::string readPackage();
-    /** get the current system date + time */
-    std::string getTime();
-    
+
     /** a reference back to the server */
     std::shared_ptr<TCPServer> tcpserver;
     Packaging packaging;

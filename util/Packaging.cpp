@@ -28,22 +28,22 @@ Packaging::~Packaging() {}
 
 std::string Packaging::createLoginPackage(const std::string& username) {
     this->receiver = "server";
-    this->message = username;
-    this->sender = " ";
+    this->message = " ";
+    this->sender = username;
     return constructPackage();
 }
 
 std::string Packaging::createTimePackage(const std::string& message) {
     this->receiver = "self";
     this->message = message;
-    this->sender = " ";
+    this->sender = sender;
     return constructPackage();
 }
 
 std::string Packaging::createDisconnectPackage() {
     this->receiver = " ";
     this->message = "disconnect";
-    this->sender = " ";
+    this->sender = sender;
     return constructPackage();
 }
 
@@ -61,10 +61,20 @@ std::string Packaging::createPivatePackage(const std::string& receiver, const st
     return constructPackage();
 }
 
+std::string Packaging::createOnlineUsersPackage(const std::vector<std::string>& onlineUsers) {
+    std::ostringstream joinedFields;
+    // inserts the elements into the "joinedFields" stream, with the "|" delimiter 
+    std::copy(onlineUsers.begin(), onlineUsers.end(), std::ostream_iterator<std::string>(joinedFields, "|"));
+    std::string result = joinedFields.str();
+    // unnecessary delimiter on the end of the string
+    result[result.length() - 1] = '\0';
+    return result;
+}
+
 std::string Packaging::constructPackage() {
     std::string length = std::to_string(message.length());
     // package: receiver|msglength|message|sender
-	return receiver + glue + length + glue + message + glue + sender + glue;
+    return receiver + glue + length + glue + message + glue + sender + glue;
 }
 
 void Packaging::parsePackage(std::string package) {

@@ -39,7 +39,15 @@ void* ClientThread::run() {
             std::cout << "request: " << request << "\n";
         }
         if (request.compare("login_request") == 0) {
-            onLoginRequest();
+            onLoginRequest(package);
+            std::cout << "online users: \n";
+            std::vector<std::string> onlineUsers = tcpserver->getOnlineUsers();
+            /*for (auto user : onlineUsers) {
+                std::cout << user << " ";
+            }
+            std::cout << "\n\n\n";*/
+            std::string users = packaging.createOnlineUsersPackage(onlineUsers);
+            std::cout << users;
         }
         if (request.compare("logout_request") == 0) {
             onLogoutRequest();
@@ -60,14 +68,16 @@ void ClientThread::sendPackage(const std::string& package) {
     std::cout << "Message sent to the client.\n" ;
 }
 
-void ClientThread::onLoginRequest() {
+void ClientThread::onLoginRequest(const std::string& incomingPackage) {
     int buffSize = sizeof(messageBuff);
     char sendBuff[buffSize];
 
     std::string serverTime = this->getTime();
 
     /** create the new User object */
-    user = User(serverTime);
+    packaging.parsePackage(incomingPackage);
+    std::string username = packaging.getSender();
+    user = User(username, serverTime);
     /** create the first package to be sent to the user, their login time */
     snprintf(sendBuff, buffSize, "%.24s", serverTime.c_str());
     std::string package = packaging.createTimePackage(sendBuff);
@@ -76,7 +86,7 @@ void ClientThread::onLoginRequest() {
     sendPackage(package);
 }
 
-void ClientThread::onGlobalMessageRequest(std::string package) {
+void ClientThread::onGlobalMessageRequest(const std::string& package) {
     std::cout << "Sending message to every user...\n";
 
     packaging.parsePackage(package);
@@ -140,4 +150,8 @@ std::string ClientThread::getTime() {
     now = time(NULL);
     std::string currentTime = ctime(&now);
     return currentTime;
+}
+
+std::string ClientThread::getUsername() {
+    return user.getUsername();
 }

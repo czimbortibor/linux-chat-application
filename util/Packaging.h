@@ -10,7 +10,10 @@
 #define PACKAGING_H
 
 #include <string>
+#include <sstream>
 #include <deque>
+#include <vector>
+#include <iterator>
 
 /**     Realizes the protocol inside the chat application.
  *
@@ -44,9 +47,11 @@ public:
     /** package used for disconnect requests */
     std::string createDisconnectPackage();
     /** package used for sending message to every online user */
-    std::string createGlobalPackage(const std::string& message, const std::string& sennder);
+    std::string createGlobalPackage(const std::string& message, const std::string& sender);
     /** private message to a specific user */
     std::string createPivatePackage(const std::string& receiver, const std::string& message, const std::string& sender);
+    /** package used to send the online user's list to a user */
+    std::string createOnlineUsersPackage(const std::vector<std::string>& onlineUsers);
 
     void parsePackage(std::string package);
 

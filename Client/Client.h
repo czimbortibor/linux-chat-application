@@ -8,7 +8,7 @@
 #include <QTcpSocket>
 #include <QDataStream>
 
-#include "Packaging.h"
+#include "../util/Packaging.h"
 
 
 class Client : public QObject {

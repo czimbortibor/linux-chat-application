@@ -15,6 +15,7 @@
 #include <arpa/inet.h>
 
 #include <list>
+#include <vector>
 
 #include "ClientThread.h"
 
@@ -28,6 +29,7 @@ public:
     
     void startServer();
     void removeClient(ClientThread& clientThread);
+    std::vector<std::string> getOnlineUsers();
     
     void lockMutex() { pthread_mutex_lock(&mutex); }
     void unlockMutex() { pthread_mutex_unlock(&mutex); }

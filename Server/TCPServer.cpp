@@ -79,3 +79,15 @@ void TCPServer::removeClient(ClientThread& clientThread) {
     //std::unique_ptr<ClientThread> clientPtr = static_cast<std::unique_ptr<ClientThread>>(&clientThread);
     //usersPtr->remove(clientPtr);
 }
+
+std::vector<std::string> TCPServer::getOnlineUsers() {
+    std::vector<std::string> onlineUsers;
+  
+    auto list = usersPtr.get();
+    std::list<std::unique_ptr<ClientThread>>::const_iterator iterator;
+    for (iterator = list->begin(); iterator != list->end(); ++iterator) {
+        onlineUsers.push_back((**iterator).getUsername());
+    }
+    
+    return onlineUsers;
+}
