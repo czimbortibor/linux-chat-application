@@ -5,9 +5,12 @@
 #include <QScopedPointer>
 #include <QSharedPointer>
 #include <QMessageBox>
+#include <QListWidgetItem>
+#include <QVector>
 
 #include "LoginDialog.h"
 #include "Client.h"
+#include "PrivateMessageDialog.h"
 
 
 namespace Ui {
@@ -31,13 +34,22 @@ private:
 	QSharedPointer<LoginDialog> loginDialog;
 	QSharedPointer<Client> client;
 
+	/** list of all the active private message dialogs */
+	QVector<QString> privateDialogs;
+
 	void initClient();
+	void createPrivateDialog(QString username);
 
 private slots:
 	void onSignIn(QString username, QString password, QString serverAddr, QString port);
     void onDisplayError(QAbstractSocket::SocketError socketError);
     void onReceivedMessage(QString message);
 	void onSendMessage();
+	void onReceivedUsersList(QString usersList);
+	void onPrivateMessage(QListWidgetItem* item);
+	void onUserSelected();
+	void onClosePrivateDialog(QString username);
+	void onReceivedPrivateMessage(QString receiver, QString message, QString sender);
 };
 
 

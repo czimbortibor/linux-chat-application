@@ -75,6 +75,9 @@
          </item>
          <item>
           <widget class="QPushButton" name="btnOk">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(85, 255, 127);</string>
+           </property>
            <property name="text">
             <string>OK</string>
            </property>
@@ -85,6 +88,9 @@
          </item>
          <item>
           <widget class="QPushButton" name="btnCancel">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(85, 255, 127);</string>
+           </property>
            <property name="text">
             <string>Cancel</string>
            </property>

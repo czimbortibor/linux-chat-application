@@ -21,7 +21,11 @@
 #include <arpa/inet.h>
 #include <sys/select.h>
 
+#include <chrono>
+#include <thread>
 #include <list>
+#include <vector>
+#include <algorithm>
 
 #include "../util/Packaging.h"
 #include "MyThread.h"
@@ -38,9 +42,10 @@ public:
     
     virtual void* run();
     
-    void onLoginRequest(const std::string& incomingPackage);
+    void onLoginRequest(const std::string& package);
     void onLogoutRequest();
     void onGlobalMessageRequest(const std::string& package);
+    void onPrivateMessageRequest(const std::string& package);
     
     bool logoutRequest = false;
     
@@ -59,7 +64,11 @@ private:
     void sendPackage(const std::string& package);
     /** reads the incoming package from the user */
     std::string readPackage();
-
+    /** sends the package to every online user*/
+    void sendPackageToAll(const std::string& package);
+    void sendPackageToTarget(const std::string& package, const std::string& target);
+    void sendUsersList();
+    
     /** a reference back to the server */
     std::shared_ptr<TCPServer> tcpserver;
     Packaging packaging;

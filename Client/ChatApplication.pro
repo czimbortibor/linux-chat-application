@@ -17,13 +17,17 @@ SOURCES +=\
     LoginDialog.cpp \
     Main.cpp \
     MainWindow.cpp \
-    ../util/Packaging.cpp
+    ../util/Packaging.cpp \
+    PrivateMessageDialog.cpp
 
 HEADERS  += \
     Client.h \
     LoginDialog.h \
     MainWindow.h \
-    ../util/Packaging.h
+    ../util/Packaging.h \
+    PrivateMessageDialog.h
 
-FORMS    += mainwindow.ui \
-    logindialog.ui
+FORMS    += \
+    PrivateMessageDialog.ui \
+    LoginDialog.ui \
+    MainWindow.ui

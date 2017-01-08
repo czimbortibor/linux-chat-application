@@ -21,10 +21,10 @@
  *		- package assembling -> creates a package for a specific request
  *		- package disassembling -> read the package and identify the request
  *
- *	general package format: receiver|msglength|message|sender
+ *	general package format: receiver|pckglength|message|sender
  *	joined together with '|'
  *		- receiver: the user whom the message is addressed
- *		- length: length of the user's message
+ *		- pckglength: length of the package
  *		- message: the actual data
  *		- sender: who sent the message
  *
@@ -32,12 +32,13 @@
  *		- login: receiver = "server"
  *		- disconnect: message = "disconnect"
  *		- global: receiver = "global"
+ *		- list_users: receiver = "list_users"
 */
 class Packaging {
 public:
     Packaging();
-    Packaging(const std::string& receiver, std::size_t msglength, const std::string& message, const std::string& sender);
-    Packaging(std::size_t msglength, const std::string& message, const std::string& sender);
+    Packaging(const std::string& receiver, std::size_t pckglength, const std::string& message, const std::string& sender);
+    Packaging(std::size_t pckglength, const std::string& message, const std::string& sender);
     virtual ~Packaging();
 
     /** package used for login requests, the message contains the username */
@@ -60,10 +61,12 @@ public:
 
     std::string getMessage() const { return message; }
     std::string getSender() const { return sender; }
+    std::string getReceiver() const { return receiver; }
+    size_t getPckglength() const { return pckglength; }
 
 private:
     std::string receiver;
-    std::size_t msglength;
+    std::size_t pckglength;
     std::string message;
     std::string sender;
 

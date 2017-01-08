@@ -19,6 +19,8 @@ public:
 	explicit Client(QObject* parent = 0);
 	Client(QString serverAddr = "127.0.0.1", QString portNr = "10013", QString username = "test user");
 
+	QString getUsername() { return username; }
+
 	void connectToServer();
 	void sendPackage(QString package);
 
@@ -35,13 +37,16 @@ signals:
     void readyRead();
     void error();
 	void login();
-	void receivedPackage(QString package);
+	void receivedMessage(QString message);
+	void receivedUsersList(QString usersList);
+	void receivedPrivateMessage(QString receiver, QString message, QString sender);
 
 public slots:
 	void onLoginRequest();
 	void onReadMsg();
 	void onLogoutRequest();
 	void onGlobalPackage(QString message);
+	void onSendPrivateMessage(QString receiver, QString message, QString sender);
 };
 
 #endif // CLIENT_H

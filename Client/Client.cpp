@@ -67,18 +67,28 @@ void Client::onReadMsg() {
 	packaging.parsePackage(package.toStdString());
 	QString sender = QString::fromStdString(packaging.getSender());
 	QString message = QString::fromStdString(packaging.getMessage());
+	QString receiver = QString::fromStdString(packaging.getReceiver());
+	std::string request = packaging.identifyRequest(package.toStdString());
+	qDebug() << "request:" << QString::fromStdString(request);
 	/** string to be displayed on the message wall */
 	QString output;
-	// on login the server sends back the current time
-	if (sender == " ") {
-		output = "Login time: " + message;
-	}
-	// normal message from a user
-	else {
-		output = sender + ": "+ message;
-	}
 
-	emit receivedPackage(output);
+	qDebug() << "from server: " << res;
+	if (request.compare("time_package") == 0) {
+		output = "Login time: " + message;
+		emit receivedMessage(output);
+	}
+	else if (request.compare("online_users_package") == 0) {
+		emit receivedUsersList(message);
+	}
+	else if (request.compare("global_package") == 0) {
+		output = sender + ": " + message;
+		emit receivedMessage(output);
+	}
+	else if (request.compare("private_package") == 0) {
+		// qDebug() << sender + " -> " + receiver + ": " + message;
+		emit receivedPrivateMessage(sender, message, receiver);
+	}
 }
 
 void Client::sendPackage(QString package) {
@@ -88,5 +98,10 @@ void Client::sendPackage(QString package) {
 	QByteArray messageBlock = package.toUtf8();;
 
 	tcpSocket->write(messageBlock);
-	qDebug() << "message sent to the server.";
+	qDebug() << "package sent to the server.\n";
+}
+
+void Client::onSendPrivateMessage(QString receiver, QString message, QString sender) {
+	std::string package = packaging.createPivatePackage(receiver.toStdString(), message.toStdString(), sender.toStdString());
+	sendPackage(QString::fromStdString(package));
 }
