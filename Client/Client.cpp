@@ -105,3 +105,14 @@ void Client::onSendPrivateMessage(QString receiver, QString message, QString sen
 	std::string package = packaging.createPivatePackage(receiver.toStdString(), message.toStdString(), sender.toStdString());
 	sendPackage(QString::fromStdString(package));
 }
+
+void Client::onSendFile(QByteArray blob, int fileSize, QString receiver, QString sender) {
+	// send over the file_size package
+	std::string package = packaging.createFileSizePackage(fileSize);
+	sendPackage(QString::fromStdString(package));
+
+	tcpSocket->waitForBytesWritten();
+	tcpSocket->flush();
+	package = blob.toStdString();
+	sendPackage(QString::fromStdString(package));
+}

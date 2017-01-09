@@ -1,5 +1,5 @@
 #include "MainWindow.h"
-#include "ui_mainwindow.h"
+#include "ui_MainWindow.h"
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
 	ui->setupUi(this);
@@ -26,6 +26,7 @@ void MainWindow::onSignIn(QString username, QString password, QString serverAddr
 	this->password = password;
 	this->serverAddr = serverAddr;
 	this->port = port;
+	this->setWindowTitle(username);
 	initClient();
 }
 

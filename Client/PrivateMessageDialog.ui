@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>241</width>
-    <height>308</height>
+    <width>282</width>
+    <height>334</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,8 +15,8 @@
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
    <item row="0" column="0">
-    <layout class="QGridLayout" name="gridLayout">
-     <item row="0" column="0" colspan="3">
+    <layout class="QGridLayout" name="gridLayout" rowstretch="0,1,0,0">
+     <item row="0" column="0" colspan="4">
       <widget class="QTextEdit" name="editRecvMessage">
        <property name="frameShape">
         <enum>QFrame::Panel</enum>
@@ -29,7 +29,7 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="0" colspan="3">
+     <item row="1" column="0" colspan="4">
       <widget class="QTextEdit" name="editSendMessage">
        <property name="frameShape">
         <enum>QFrame::Panel</enum>
@@ -76,7 +76,7 @@ background-color: rgb(85, 255, 127);</string>
        </property>
       </widget>
      </item>
-     <item row="2" column="2">
+     <item row="2" column="3">
       <spacer name="horizontalSpacer_2">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -88,6 +88,17 @@ background-color: rgb(85, 255, 127);</string>
         </size>
        </property>
       </spacer>
+     </item>
+     <item row="2" column="2">
+      <widget class="QPushButton" name="btnSendFile">
+       <property name="styleSheet">
+        <string notr="true">
+background-color: rgb(85, 255, 127);</string>
+       </property>
+       <property name="text">
+        <string>Attach file</string>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>

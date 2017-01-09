@@ -2,6 +2,10 @@
 #define PRIVATEMESSAGEDIALOG_HPP
 
 #include <QDialog>
+#include <QFileDialog>
+#include <QFile>
+#include <QByteArray>
+#include <QMessageBox>
 
 #include "Client.h"
 
@@ -27,10 +31,12 @@ private:
 signals:
 	void closeDialog(QString username);
 	void sendPrivateMessage(QString receiver, QString message, QString sender);
+	void sendFile(QByteArray blob, int fileSize, QString receiver, QString sender);
 
 public slots:
 	void onReceivedPrivateMessage(QString receiver, QString message, QString sender);
 	void onSendMessageButtonClicked();
+	void onSendFile();
 };
 
 #endif // PRIVATEMESSAGEDIALOG_HPP

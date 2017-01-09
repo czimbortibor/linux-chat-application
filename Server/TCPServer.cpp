@@ -75,9 +75,19 @@ void TCPServer::startServer() {
     }
 }
 
-void TCPServer::removeClient(ClientThread& clientThread) {
-    //std::unique_ptr<ClientThread> clientPtr = static_cast<std::unique_ptr<ClientThread>>(&clientThread);
-    //usersPtr->remove(clientPtr);
+// TODO: remove client
+void TCPServer::removeClient(const std::string& username) {
+   /* std::cout << "nr of users: " << usersPtr->size() << "\n";
+    auto list = usersPtr.get();
+    std::list<std::unique_ptr<ClientThread>>::const_iterator iterator;
+    for (iterator = list->begin(); iterator != list->end(); ++iterator) {
+        std::string tmp = (**iterator).getUsername();
+        if (tmp.compare(username) == 0) {
+            break;
+        }
+    }
+    usersPtr->erase(iterator);
+    std::cout << "nr of users after delete: " << usersPtr->size() << "\n"; */
 }
 
 std::vector<std::string> TCPServer::getOnlineUsers() {

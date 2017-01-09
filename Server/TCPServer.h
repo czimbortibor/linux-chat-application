@@ -28,7 +28,7 @@ public:
     virtual ~TCPServer();
     
     void startServer();
-    void removeClient(ClientThread& clientThread);
+    void removeClient(const std::string& username);
     std::vector<std::string> getOnlineUsers();
     
     void lockMutex() { pthread_mutex_lock(&mutex); }

@@ -1,5 +1,5 @@
 #include "LoginDialog.h"
-#include "ui_logindialog.h"
+#include "ui_LoginDialog.h"
 
 #include <QDebug>
 

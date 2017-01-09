@@ -33,6 +33,7 @@
  *		- disconnect: message = "disconnect"
  *		- global: receiver = "global"
  *		- list_users: receiver = "list_users"
+ *		- file_size: receiver = "file_size"
 */
 class Packaging {
 public:
@@ -53,6 +54,10 @@ public:
     std::string createPivatePackage(const std::string& receiver, const std::string& message, const std::string& sender);
     /** package used to send the online user's list to a user */
     std::string createOnlineUsersPackage(const std::vector<std::string>& onlineUsers);
+	/** package used to signal the incoming file's size */
+	std::string createFileSizePackage(int fileSize);
+	/** package used to send a binary stream */
+	std::string createFilePackage(const std::string& blob, const std::string& receiver, const std::string& sender);
 
     void parsePackage(std::string package);
 

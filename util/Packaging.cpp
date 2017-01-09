@@ -66,14 +66,24 @@ std::string Packaging::createOnlineUsersPackage(const std::vector<std::string>& 
     // inserts the elements into the "joinedFields" stream, with the "," delimiter 
     std::copy(onlineUsers.begin(), onlineUsers.end(), std::ostream_iterator<std::string>(joinedFields, ","));
     std::string usersList = joinedFields.str();
-    // unnecessary delimiter on the end of the string
-    //usersList[usersList.length() - 1] = '\0';
-    /*std::string usersList;
-    usersList.assign(tmpStr, 0, tmpStr.length() - 1);*/
     this->receiver = "list_users";
     this->message = usersList;
     this->sender = "server";
     return constructPackage();
+}
+
+std::string Packaging::createFileSizePackage(int fileSize) {
+	this->receiver = "file_size";
+	this->message = std::to_string(fileSize);
+	this->sender = sender;
+	return constructPackage();
+}
+
+std::string Packaging::createFilePackage(const std::string& blob, const std::string& receiver, const std::string& sender) {
+	this->receiver = receiver;
+	this->message = blob;
+	this->sender = sender;
+	return constructPackage();
 }
 
 std::string Packaging::constructPackage() {
@@ -127,6 +137,9 @@ std::string Packaging::identifyRequest(std::string package) {
         if (token.compare("list_users") == 0) {
             return "online_users_package";
         }
+		if (token.compare("file_size") == 0) {
+			return "file_size_package";
+		}
         // erase token + glue
         package.erase(0, pos + 1);
     }

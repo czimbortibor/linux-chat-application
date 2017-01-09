@@ -52,9 +52,12 @@ void* ClientThread::run() {
         } else if (request.compare("private_package") == 0) {
             std::cout << "request: " << "private_package" << "\n";
             onPrivateMessageRequest(package);
+        } else if (request.compare("file_size_package") == 0) {
+            std::cout << "request: " << "file transfer" << "\n";
+            onFileTransfer(package);
         }
         
-        std::this_thread::sleep_for(std::chrono::milliseconds(5000));
+        //std::this_thread::sleep_for(std::chrono::milliseconds(5000));
     }
 }
 
@@ -145,6 +148,20 @@ void ClientThread::onPrivateMessageRequest(const std::string& package) {
     sendPackageToTarget(package, receiver);
 }
 
+void ClientThread::onFileTransfer(const std::string& package) {
+    packaging.parsePackage(package);
+    int fileSize = stoi(packaging.getMessage());
+    std::cout << "file size: " << fileSize << "\n";
+    
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    std::string readPackage = readFilePackage(fileSize);
+    //std::cout << readPackage;
+    std::ofstream file;
+    file.open("../output.txt", std::ios::out);
+    file << readPackage;
+    file.close();
+}
+
 void ClientThread::onLogoutRequest() {
     std::cout << "Disconnecting user..\n";
     // TODO: remove the disconnected user from the online user's list
@@ -157,13 +174,32 @@ void ClientThread::onLogoutRequest() {
 
 std::string ClientThread::readPackage() {
     int buffSize = sizeof(messageBuff);
-    char msgBuff[1024];
 
-    int res = recv(acceptSocket, msgBuff, buffSize, 0);
-    if (res != 0) {
+    int res = recv(acceptSocket, messageBuff, buffSize, 0);
+    if (res > 0) {
         std::cout << " bytes: " << res << "\n";
     }
-    if (res < 0) {
+    else if (res == 0) {
+        tcpserver->removeClient(user.getUsername());
+        pthread_exit(NULL);
+    }
+    else {
+        errorMsg = "error when receiving the message from the client!\n";
+        error(errorMsg.c_str());
+    }
+    messageBuff[res] = '\0';
+    return messageBuff;
+}
+
+std::string ClientThread::readFilePackage(int fileSize) {
+    int buffSize = sizeof(messageBuff);
+    char msgBuff[fileSize];
+    
+    int res = recv(acceptSocket, msgBuff, fileSize, 0);
+    if (res > 0) {
+        std::cout << "\n file bytes read: " << res << "\n";
+    }
+    else {
         errorMsg = "error when receiving the message from the client!\n";
         error(errorMsg.c_str());
     }

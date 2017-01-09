@@ -26,6 +26,8 @@
 #include <list>
 #include <vector>
 #include <algorithm>
+#include <fstream>
+#include <iostream>
 
 #include "../util/Packaging.h"
 #include "MyThread.h"
@@ -46,6 +48,7 @@ public:
     void onLogoutRequest();
     void onGlobalMessageRequest(const std::string& package);
     void onPrivateMessageRequest(const std::string& package);
+    void onFileTransfer(const std::string& package);
     
     bool logoutRequest = false;
     
@@ -57,13 +60,16 @@ public:
     
 private:
     int acceptSocket;
-    char messageBuff[1024];
+    char messageBuff[2048];
     
     /** basic information about a user */
     User user;
     void sendPackage(const std::string& package);
     /** reads the incoming package from the user */
     std::string readPackage();
+    /** reads a file package which comes right after the file's size package and saves into an output file */
+    std::string readFilePackage(int fileSize);
+    
     /** sends the package to every online user*/
     void sendPackageToAll(const std::string& package);
     void sendPackageToTarget(const std::string& package, const std::string& target);

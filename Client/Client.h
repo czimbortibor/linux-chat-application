@@ -7,6 +7,7 @@
 #include <QIODevice>
 #include <QTcpSocket>
 #include <QDataStream>
+#include <QThread>
 
 #include "../util/Packaging.h"
 
@@ -47,6 +48,7 @@ public slots:
 	void onLogoutRequest();
 	void onGlobalPackage(QString message);
 	void onSendPrivateMessage(QString receiver, QString message, QString sender);
+	void onSendFile(QByteArray blob, int fileSize, QString receiver, QString sender);
 };
 
 #endif // CLIENT_H
